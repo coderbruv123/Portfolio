@@ -1,0 +1,11 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #12071f, #2f204e);
+  color: aliceblue;
+}
