@@ -13,7 +13,7 @@ const About = () => {
                
                 <div className="w-50 h-50 rounded-full overflow-hidden mb-4">
                     <img
-                        src="https://avatars.githubusercontent.com/u/12345678?v=4"
+                        src="https://media.licdn.com/dms/image/v2/D4D03AQGDv_Cw0mYvvw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1723900495512?e=2147483647&v=beta&t=hlrQXcVrdnh-FgelrjRaEmjr3si8fq_x0BSbqJHhEZI"
                         alt="Profile"
                         className="w-full h-full object-cover"
                     /></div>
