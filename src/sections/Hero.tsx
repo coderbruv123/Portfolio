@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { FaGithub } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
+import ContactIcon from "../animation/icons";
 
 function Hero() {
     return (
@@ -51,7 +52,7 @@ function Hero() {
                     <motion.button
                         className="bg-green-500 text-white rounded px-4 py-2"
                     >
-                        Contact Me
+                        Projects
                     </motion.button>
                 </div>
             </div>
@@ -74,8 +75,12 @@ function Hero() {
                     <FaLinkedin />
                 </a>
             </div>
+     
 
-            <button className="absolute bottom-10 right-10">Contact</button>
+            <button className="absolute bottom-10 right-10">    
+            <ContactIcon/>                    
+
+            </button>
         </motion.div>
     );
 }

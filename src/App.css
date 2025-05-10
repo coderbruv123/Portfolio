@@ -5,7 +5,11 @@
 }
 
 html, body {
-  min-height: 100vh;
+
+    height: 100%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  
   background: linear-gradient(to bottom, #12071f, #2f204e);
   color: aliceblue;
 }
