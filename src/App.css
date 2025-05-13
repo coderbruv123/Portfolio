@@ -1,4 +1,4 @@
-* {
+/* * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -7,9 +7,13 @@
 html, body {
 
     height: 100%;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
+ 
   
-  background: linear-gradient(to bottom, #12071f, #2f204e);
   color: aliceblue;
+} */
+
+html{
+  scroll-behavior: smooth;
+    background: linear-gradient(to bottom, #12071f, #2f204e);
+
 }
