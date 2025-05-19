@@ -3,7 +3,6 @@ import About from "./sections/About";
 import './App.css'
 import Skills from "./sections/Skills";
 import Contact from "./sections/Contact";
-import Menu from "./components/Menu";
 
 function App() {
     return (
@@ -21,8 +20,6 @@ function App() {
                         <Contact/>
       </section>
    
-           <Menu/>
-            
       </div>
     );
 }

@@ -1,4 +1,3 @@
-import { Phone, PhoneCallIcon } from "lucide-react";
 import { MdEmail } from "react-icons/md";
 
 const Contact = ()=>{
@@ -25,12 +24,12 @@ const Contact = ()=>{
                     <p className="text-white">name@gmail.com</p>
                 </div>
                 <div className="bg-blue-900 flex flex-col justify-center items-center h-[8rem] w-[20rem] rounded">
-                    <Phone size={30} className="text-5xl text-white " />
+                    {/* <Phone size={30} className="text-5xl text-white " /> */}
                     <h1 className="text-2xl text-white  font-bold ">Contact</h1>
                     <p className="text-white">980000000</p>
                 </div>
                 <div className="bg-blue-900 flex flex-col justify-center items-center h-[8rem] w-[20rem] rounded">
-                    <Phone size={30} className="text-5xl text-white " />
+                    {/* <Phone size={30} className="text-5xl text-white " /> */}
                     <h1 className="text-2xl text-white  font-bold ">Contact</h1>
                     <p className="text-white">980000000</p>
                 </div>
