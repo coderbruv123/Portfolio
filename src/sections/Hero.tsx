@@ -51,7 +51,7 @@ function Hero() {
                     <motion.button
                         className="bg-green-500 text-white rounded px-4 py-2"
                     >
-                        Projects
+                        Contact
                     </motion.button>
                 </div>
             </div>
