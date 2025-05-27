@@ -4,6 +4,7 @@ import './App.css'
 import Skills from "./sections/Skills";
 import Contact from "./sections/Contact";
 import { motion } from "framer-motion"; 
+import Projects from "./sections/Projects";
 
 function App() {
     return (
@@ -34,6 +35,15 @@ function App() {
           transition={{ duration: 0.8 }}
         >
           <Skills />
+        </motion.section>
+        <motion.section
+          id="Projects"
+          className="h-screen snap-start"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Projects/>
         </motion.section>
         <motion.section
           id="Contact"
