@@ -18,9 +18,9 @@ const aboutCards = [
 
 const About = () => {
     return (
-        <div className="w-full overflow-x-auto flex flex-col  items-center justify-center">
-            <h1 className="text-4xl flex items-center justify-center text-white">About Me</h1>
-            <div className="flex gap-8 min-w-[900px] justify-center  md:min-w-0 md:flex-row">
+        <div className="w-full min-h-screen flex flex-col items-center justify-center overflow-x-auto">
+            <h1 className="text-4xl flex items-center justify-center text-white mb-8">About Me</h1>
+            <div className="flex gap-8 justify-center items-center min-w-[900px] md:min-w-0 md:flex-row">
                 {aboutCards.map((card, idx) => (
                     <motion.div
                         key={idx}
