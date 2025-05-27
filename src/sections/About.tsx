@@ -18,7 +18,7 @@ const aboutCards = [
 
 const About = () => {
     return (
-        <div className="w-full overflow-x-auto items-center">
+        <div className="w-full overflow-x-auto flex flex-col  items-center justify-center">
             <h1 className="text-4xl flex items-center justify-center text-white">About Me</h1>
             <div className="flex gap-8 min-w-[900px] justify-center  md:min-w-0 md:flex-row">
                 {aboutCards.map((card, idx) => (
