@@ -19,7 +19,7 @@ const Footer = () => {
                 </p>
                 <div className="flex items-center gap-4 text-gray-400 text-sm">
                     <a
-                        href="https://github.com/giriprashant"
+                        href="https://github.com/coderbruv123"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-blue-400 transition flex items-center gap-1"
@@ -27,7 +27,7 @@ const Footer = () => {
                         <FaGithub size={18} /> GitHub
                     </a>
                     <a
-                        href="https://linkedin.com/in/giriprashant"
+                        href="https://www.linkedin.com/in/prashant-giri-3a5604207/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-blue-400 transition flex items-center gap-1"

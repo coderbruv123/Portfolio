@@ -8,7 +8,7 @@ const aboutCards = [
         text: `I love collaborating with teams to create impactful digital experiences. My journey in tech has taught me the importance of clean code, accessibility, and continuous learning. I thrive in environments where innovation and creativity are encouraged.`,
     },
     {
-        text: `Hi! I'm [Your Name], currently pursuing [My Education level] in [My College] in [My Course], a passionate developer with experience in building responsive and user-friendly applications using React, JavaScript, and modern web technologies like DotNet acting as backend. I enjoy turning complex problems into simple, beautiful, and intuitive designs. When I'm not coding, you can find me exploring new tech, reading, or enjoying the outdoors.`,
+        text: `Hi! I'm Prashant Giri, currently pursuing Bachelors in Reliance College in Bachelors in Computer Application, a passionate developer with experience in building responsive and user-friendly applications using React, JavaScript, and modern web technologies like DotNet acting as backend. I enjoy turning complex problems into simple, beautiful, and intuitive designs. When I'm not coding, you can find me exploring new tech, reading, or enjoying the outdoors.`,
     },
    
     {
