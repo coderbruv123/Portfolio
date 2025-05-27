@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { FaGithub } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
+import profileImg from '../../public/img.png';
 
 function Hero() {
     return (
         <motion.div
-            className="hero relative min-h-screen overflow-hidden"
+            className="hero relative min-h-screen overflow-hidden flex items-center justify-center"
             initial={{ y: "100vh" }}
             animate={{ y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
@@ -22,7 +23,7 @@ function Hero() {
                 </motion.h1>
             </div>
 
-            <div className="absolute bottom-60 left-10 flex flex-col gap-2 w-[30rem]">
+            <div className="absolute bottom-60 z-10 left-10 flex flex-col gap-2 w-[30rem]">
                 <motion.h3
                     className="text-gray-300 text-xl"
                     initial={{ opacity: 0, y: 50 }}
@@ -56,7 +57,7 @@ function Hero() {
                 </div>
             </div>
 
-            <div className="absolute top-20 right-10 flex flex-col gap-4">
+            <div className="absolute top-20 right-10 z-10 flex flex-col gap-4">
                 <a
                     href={import.meta.env.VITE_GITHUB_URL}
                     target="_blank"
@@ -79,6 +80,15 @@ function Hero() {
             <button className="absolute bottom-10 right-10">    
 
             </button>
+           
+
+            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                <img
+                    src={profileImg}
+                    alt="Prashant Giri"
+                    className="rounded-full w-200 h-200 object-cover shadow-lg pointer-events-auto"
+                />
+            </div>
         </motion.div>
     );
 }
