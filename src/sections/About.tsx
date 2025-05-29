@@ -12,7 +12,7 @@ const aboutCards = [
     },
    
     {
-        text: `Outside of coding, I enjoy hiking, photography, and exploring new cuisines. I believe a balanced life fuels creativity and productivity, helping me bring fresh perspectives to my work.`,
+        text: `Outside of coding, I enjoy hiking, Hanging out with friends and just travelling . I believe a balanced life fuels creativity and productivity, helping me bring fresh perspectives to my life.`,
     },
 ];
 

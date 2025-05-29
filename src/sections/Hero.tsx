@@ -44,16 +44,17 @@ function Hero() {
                 </motion.p>
 
                 <div className="flex gap-4 mt-4">
-                    <motion.button
+                    <motion.a
                         className="bg-blue-500 text-white rounded px-4 py-2"
-                    >
+                   href="Projects"  >
                         Projects
-                    </motion.button>
-                    <motion.button
+                    </motion.a>
+                    <motion.a
                         className="bg-green-500 text-white rounded px-4 py-2"
+                        href="Contact"
                     >
                         Contact
-                    </motion.button>
+                    </motion.a>
                 </div>
             </div>
 
@@ -86,7 +87,7 @@ function Hero() {
                 <img
                     src={profileImg}
                     alt="Prashant Giri"
-                    className="rounded-full w-200 h-200 object-cover shadow-lg pointer-events-auto"
+                    className="rounded-full w-200 h-200 object-cover bg-red-100 shadow-lg pointer-events-auto"
                 />
             </div>
         </motion.div>
