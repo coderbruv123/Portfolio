@@ -10,7 +10,7 @@ function App() {
     return (
       <div className="h-screen overflow-y-scroll overflow-x-hidden snap-y snap-mandatory">
         <motion.section
-          id="hero"
+          id="#hero"
           className="h-screen snap-start"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -19,7 +19,8 @@ function App() {
           <Hero />
         </motion.section>
         <motion.section
-          id="about"
+          id="#about"
+
           className="h-screen snap-start"
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}

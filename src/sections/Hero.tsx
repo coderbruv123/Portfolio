@@ -83,13 +83,15 @@ function Hero() {
             </button>
            
 
-            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-                <img
-                    src={profileImg}
-                    alt="Prashant Giri"
-                    className="rounded-full w-200 h-200 object-cover bg-red-100 shadow-lg pointer-events-auto"
-                />
-            </div>
+           <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+    <img
+      src={profileImg}
+      alt="Prashant Giri"
+      className="rounded-full w-200 opacity-100 h-200 object-cover relative"
+    />
+
+</div>
+
         </motion.div>
     );
 }
