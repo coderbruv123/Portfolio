@@ -46,12 +46,12 @@ function Hero() {
                 <div className="flex gap-4 mt-4">
                     <motion.a
                         className="bg-blue-500 text-white rounded px-4 py-2"
-                   href="Projects"  >
+                   href="#Projects"  >
                         Projects
                     </motion.a>
                     <motion.a
                         className="bg-green-500 text-white rounded px-4 py-2"
-                        href="Contact"
+                        href="#Contact"
                     >
                         Contact
                     </motion.a>
