@@ -1,62 +1,89 @@
 import Hero from "./sections/Hero";
 import About from "./sections/About";
-import './App.css'
+import "./App.css";
 import Skills from "./sections/Skills";
 import Contact from "./sections/Contact";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
 import Projects from "./sections/Projects";
+import Sidebar from "./components/Sidebar";
 
 function App() {
-    return (
-      <div className="h-screen overflow-y-scroll overflow-x-hidden snap-y snap-mandatory">
+  return (
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main Content */}
+      <div className="flex-1 h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth">
+        
+        {/* HERO */}
         <motion.section
-          id="#hero"
-          className="h-screen snap-start"
+          id="hero"
+          className="h-screen snap-start flex items-center"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Hero />
+          <div className="max-w-5xl mx-auto w-full px-6 md:px-10">
+            <Hero />
+          </div>
         </motion.section>
-        <motion.section
-          id="#about"
 
-          className="h-screen snap-start"
+        {/* ABOUT */}
+        <motion.section
+          id="about"
+          className="h-screen snap-start flex items-center"
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <About />
+          <div className="max-w-5xl mx-auto w-full px-6 md:px-10">
+            <About />
+          </div>
         </motion.section>
+
+        {/* SKILLS */}
         <motion.section
-          id="Skills"
-          className="h-screen snap-start"
+          id="skills"
+          className="h-screen snap-start flex items-center"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Skills />
+          <div className="max-w-5xl mx-auto w-full px-6 md:px-10">
+            <Skills />
+          </div>
         </motion.section>
+
+        {/* PROJECTS */}
         <motion.section
-          id="Projects"
-          className="h-screen snap-start"
+          id="projects"
+          className="h-screen snap-start flex items-center"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Projects/>
+          <div className="max-w-5xl mx-auto w-full px-6 md:px-10">
+            <Projects />
+          </div>
         </motion.section>
+
+        {/* CONTACT */}
         <motion.section
-          id="Contact"
-          className="h-[400px] snap-start"
+          id="contact"
+          className="min-h-[400px] snap-start flex items-center"
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Contact />
+          <div className="max-w-5xl mx-auto w-full px-6 md:px-10">
+            <Contact />
+          </div>
         </motion.section>
+
       </div>
-    );
+    </div>
+  );
 }
 
 export default App;
