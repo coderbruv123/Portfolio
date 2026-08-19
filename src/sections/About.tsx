@@ -1,53 +1,52 @@
 import { motion } from "framer-motion";
-
-const profileImg =
-    "https://media.licdn.com/dms/image/v2/D4D03AQGDv_Cw0mYvvw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1723900495512?e=2147483647&v=beta&t=hlrQXcVrdnh-FgelrjRaEmjr3si8fq_x0BSbqJHhEZI";
+import { FaGraduationCap, FaUserTie, FaMountain } from "react-icons/fa";
 
 const aboutCards = [
-     {
-        text: `I love collaborating with teams to create impactful digital experiences. My journey in tech has taught me the importance of clean code, accessibility, and continuous learning. I thrive in environments where innovation and creativity are encouraged.`,
+    {
+        icon: <FaGraduationCap className="text-blue-400" size={32} />,
+        title: "Education",
+        text: `I'm currently pursuing a Bachelor in Computer Application (BCA) at Reliance College, where I'm building a strong foundation in computer science fundamentals and software development.`,
     },
     {
-        text: `Hi! I'm Prashant Giri, currently pursuing Bachelors in Reliance College in Bachelors in Computer Application, a passionate developer with experience in building responsive and user-friendly applications using React, JavaScript, and modern web technologies like DotNet acting as backend. I enjoy turning complex problems into simple, beautiful, and intuitive designs. When I'm not coding, you can find me exploring new tech, reading, or enjoying the outdoors.`,
+        icon: <FaUserTie className="text-purple-400" size={32} />,
+        title: "Full Stack Development",
+        text: `A passionate developer experienced in building responsive, user-friendly applications with React and Angular on the frontend, backed by robust ASP.NET Core APIs. I enjoy turning complex problems into simple, beautiful, and intuitive solutions.`,
     },
-   
     {
-        text: `Outside of coding, I enjoy hiking, Hanging out with friends and just travelling . I believe a balanced life fuels creativity and productivity, helping me bring fresh perspectives to my life.`,
+        icon: <FaMountain className="text-green-400" size={32} />,
+        title: "Beyond Code",
+        text: `Outside of coding, I enjoy hiking, traveling, and spending time with friends. I believe a balanced life fuels creativity and productivity, bringing fresh perspectives to my work.`,
     },
 ];
 
 const About = () => {
     return (
-        <div className="w-full min-h-screen flex flex-col items-center justify-center overflow-x-auto">
-            <h1 className="text-4xl flex items-center justify-center text-white mb-8">About Me</h1>
-            <div className="flex gap-8 justify-center items-center min-w-[900px] md:min-w-0 md:flex-row">
+        <section
+            id="about"
+            className="min-h-screen flex flex-col items-center justify-center bg-slate-950 px-6 py-20"
+        >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-2 text-center">About Me</h2>
+            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-12" />
+
+            <div className="grid md:grid-cols-3 gap-6 w-full max-w-5xl">
                 {aboutCards.map((card, idx) => (
                     <motion.div
                         key={idx}
-                        className="relative flex flex-col justify-center items-center min-h-[40vh] w-[300px] flex-shrink-0 py-8 px-4 rounded-xl"
                         initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, ease: "easeInOut", delay: idx * 0.2 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: idx * 0.15 }}
+                        className="bg-slate-900/60 backdrop-blur border border-white/10 rounded-2xl p-8 hover:border-blue-400/30 transition-shadow hover:shadow-xl hover:shadow-blue-500/5"
                     >
-                        <div
-                            className="absolute inset-0 z-0 bg-center bg-cover opacity-30 rounded-xl"
-                            style={{
-                                backgroundImage: `url(${profileImg})`,
-                                backgroundRepeat: "no-repeat",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                                filter: "blur(2px)",
-                            }}
-                        />
-                        <div className="relative z-10">
-                            <p className="flex text-gray-200 leading-relaxed justify-center">
-                                {card.text}
-                            </p>
+                        <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-white/10 flex items-center justify-center mb-5">
+                            {card.icon}
                         </div>
+                        <h3 className="text-lg font-semibold text-white mb-3">{card.title}</h3>
+                        <p className="text-gray-400 leading-relaxed text-sm">{card.text}</p>
                     </motion.div>
                 ))}
             </div>
-        </div>
+        </section>
     );
 };
 
