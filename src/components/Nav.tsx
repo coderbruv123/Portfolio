@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { smoothScrollTo } from "../utils/smoothScroll";
 
 const links = [
     { label: "About", href: "#about" },
@@ -12,10 +14,27 @@ const links = [
 const Nav = () => {
     const [scrolled, setScrolled] = useState(false);
     const [open, setOpen] = useState(false);
+    const [active, setActive] = useState("");
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 24);
-        window.addEventListener("scroll", onScroll);
+        const onScroll = () => {
+            setScrolled(window.scrollY > 24);
+
+            const sections = links.map((l) => l.href.slice(1));
+            const offset = window.scrollY + window.innerHeight / 3;
+            let current = "";
+
+            for (const id of sections) {
+                const el = document.getElementById(id);
+                if (el && el.offsetTop <= offset) {
+                    current = id;
+                }
+            }
+            setActive(current);
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
@@ -28,21 +47,47 @@ const Nav = () => {
             }`}
         >
             <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
-                <a href="#hero" className="text-lg font-bold text-white tracking-tight">
+                <a
+                    href="#hero"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        smoothScrollTo("#hero", 0, 900);
+                    }}
+                    className="text-lg font-bold text-white tracking-tight"
+                >
                     Prashant<span className="text-blue-400">.Giri</span>
                 </a>
 
-                <ul className="hidden md:flex items-center gap-8">
-                    {links.map((link) => (
-                        <li key={link.href}>
-                            <a
-                                href={link.href}
-                                className="text-sm text-slate-300 hover:text-blue-300 transition py-2"
-                            >
-                                {link.label}
-                            </a>
-                        </li>
-                    ))}
+                <ul className="hidden md:flex items-center gap-2">
+                    {links.map((link) => {
+                        const isActive = active === link.href.slice(1);
+                        return (
+                            <li key={link.href} className="relative">
+                                <a
+                                    href={link.href}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        smoothScrollTo(link.href);
+                                        setOpen(false);
+                                    }}
+                                    className={`relative px-3 py-2 text-sm rounded-lg transition ${
+                                        isActive
+                                            ? "text-white"
+                                            : "text-slate-300 hover:text-blue-300"
+                                    }`}
+                                >
+                                    {link.label}
+                                    {isActive && (
+                                        <motion.span
+                                            layoutId="nav-pill"
+                                            className="absolute inset-0 bg-white/10 border border-white/10 rounded-lg -z-10"
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                </a>
+                            </li>
+                        );
+                    })}
                 </ul>
 
                 <div className="hidden md:flex items-center gap-4">
@@ -66,6 +111,11 @@ const Nav = () => {
                     </a>
                     <a
                         href="#contact"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            smoothScrollTo("#contact");
+                            setOpen(false);
+                        }}
                         className="text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 py-2 transition"
                     >
                         Hire Me
@@ -88,7 +138,11 @@ const Nav = () => {
                             <li key={link.href}>
                                 <a
                                     href={link.href}
-                                    onClick={() => setOpen(false)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        smoothScrollTo(link.href);
+                                        setOpen(false);
+                                    }}
                                     className="text-slate-300 hover:text-blue-300 transition"
                                 >
                                     {link.label}

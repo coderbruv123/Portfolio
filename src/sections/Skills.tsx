@@ -1,15 +1,21 @@
 import Techs from "../components/Techs";
+import SectionHeader from "../components/SectionHeader";
+import Reveal from "../components/Reveal";
 
 const Skills = () => {
     return (
         <section
             id="skills"
-            className="min-h-screen flex flex-col items-center justify-center py-20 px-6 bg-slate-950"
+            className="min-h-screen flex flex-col items-center justify-center py-20 px-6 bg-transparent"
         >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-2 text-center">Skills</h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-12" />
+            <SectionHeader
+                title="Skills"
+                tagline="The technologies I work with, from backend to frontend."
+            />
 
-            <Techs />
+            <Reveal y={30}>
+                <Techs />
+            </Reveal>
         </section>
     );
 }

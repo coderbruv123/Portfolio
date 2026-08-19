@@ -58,7 +58,7 @@ const Techs = () => {
                 {techList.map((tech) => (
                     <motion.li
                         key={tech.name}
-                        whileHover={{ scale: 1.1, y: -2 }}
+                        whileHover={{ scale: 1.1, y: -4, rotate: [0, -3, 3, 0] }}
                         whileTap={{ scale: 0.96 }}
                         className={`flex flex-col items-center gap-2 p-4 rounded-2xl cursor-pointer transition-all duration-200
                             ${active === tech.name
