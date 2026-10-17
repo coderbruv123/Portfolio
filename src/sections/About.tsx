@@ -5,47 +5,75 @@ import Reveal from "../components/Reveal";
 
 const aboutCards = [
     {
-        icon: <FaGraduationCap className="text-blue-400" size={32} />,
+        icon: <FaGraduationCap className="text-blue-400" />,
         title: "Education",
-        text: `I'm currently pursuing a Bachelor in Computer Application (BCA) at Reliance College, where I'm building a strong foundation in computer science fundamentals and software development.`,
+        label: "Bachelor in Computer Application",
+        detail: "Reliance College · Nepal",
+        text: `I'm currently pursuing a Bachelor in Computer Application (BCA) at Reliance College, building a strong foundation in computer science fundamentals and software development.`,
+        color: "blue",
     },
     {
-        icon: <FaUserTie className="text-purple-400" size={32} />,
+        icon: <FaUserTie className="text-purple-400" />,
         title: "Full Stack Development",
+        label: "React · Angular · ASP.NET Core",
+        detail: "Responsive UIs with robust APIs",
         text: `A passionate developer experienced in building responsive, user-friendly applications with React and Angular on the frontend, backed by robust ASP.NET Core APIs. I enjoy turning complex problems into simple, beautiful, and intuitive solutions.`,
+        color: "purple",
     },
     {
-        icon: <FaMountain className="text-green-400" size={32} />,
+        icon: <FaMountain className="text-green-400" />,
         title: "Beyond Code",
+        label: "Hiking · Traveling · Friends",
+        detail: "Balance fuels creativity",
         text: `Outside of coding, I enjoy hiking, traveling, and spending time with friends. I believe a balanced life fuels creativity and productivity, bringing fresh perspectives to my work.`,
+        color: "green",
     },
 ];
+
+const colorConfig = {
+    blue: { icon: "text-blue-400", border: "border-blue-400/20", text: "text-blue-400", accent: "border-blue-500" },
+    purple: { icon: "text-purple-400", border: "border-purple-400/20", text: "text-purple-400", accent: "border-purple-500" },
+    green: { icon: "text-green-400", border: "border-green-400/20", text: "text-green-400", accent: "border-green-500" },
+} as const;
 
 const About = () => {
     return (
         <section
             id="about"
-            className="min-h-screen flex flex-col items-center justify-center bg-transparent px-6 py-20"
+            className="min-h-screen flex flex-col items-center justify-center bg-transparent py-24 px-6"
         >
             <SectionHeader title="About Me" />
 
-            <div className="grid md:grid-cols-3 gap-6 w-full max-w-5xl">
-                {aboutCards.map((card, idx) => (
-                    <Reveal key={idx} delay={idx * 0.15}>
-                        <motion.div
-                            whileHover={{ y: -6 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className="h-full bg-slate-900/60 backdrop-blur border border-white/10 rounded-2xl p-8 hover:border-blue-400/30 hover:shadow-xl hover:shadow-blue-500/5"
-                        >
-                            <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-white/10 flex items-center justify-center mb-5">
-                                {card.icon}
-                            </div>
-                            <h3 className="text-lg font-semibold text-white mb-3">{card.title}</h3>
-                            <p className="text-gray-400 leading-relaxed text-sm">{card.text}</p>
-                        </motion.div>
-                    </Reveal>
-                ))}
-            </div>
+            <Reveal y={40}>
+                <div className="w-full max-w-3xl space-y-8">
+                    {aboutCards.map((card, idx) => {
+                        const c = colorConfig[card.color as keyof typeof colorConfig];
+                        return (
+                            <motion.div
+                                key={idx}
+                                whileHover={{ x: -8 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className="relative pl-4 border-l-2 border-transparent group-hover:border-blue-500 transition-colors"
+                            >
+                                <div className="flex items-start gap-5 mb-8 last:mb-0">
+                                    <div className={`w-12 h-12 rounded-2xl ${c.border} flex items-center justify-center text-xl group-hover:scale-110 transition-transform shrink-0 mt-0.5`}>
+                                        {card.icon}
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1">
+                                            {card.label}
+                                        </p>
+                                        <h4 className="text-lg font-bold text-white mb-2">{card.title}</h4>
+                                        <p className="text-gray-300 text-sm leading-relaxed">
+                                            {card.text}
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            </Reveal>
         </section>
     );
 };
