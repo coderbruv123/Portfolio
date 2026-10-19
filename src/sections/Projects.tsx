@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaGithub, FaArrowLeft, FaArrowRight, FaCode, FaLink } from "react-icons/fa";
 import cinemaImg from '../../public/cinema.png';
@@ -81,7 +81,7 @@ const Projects = () => {
             <Reveal y={40} className="w-full max-w-3xl">
                 <motion.div
                     layout
-                    className="bg-slate-900/60 backdrop-blur border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+                    className="bg-panel backdrop-blur border border-line rounded-2xl shadow-2xl overflow-hidden"
                 >
                     <div className="w-full h-70 bg-black/40 flex items-center justify-center overflow-hidden">
                         <AnimatePresence mode="wait">
@@ -119,13 +119,13 @@ const Projects = () => {
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <h3 className="text-2xl font-semibold text-white mb-3">{project.title}</h3>
-                                <p className="text-gray-300 mb-6 leading-relaxed">{project.description}</p>
+                                <h3 className="text-2xl font-semibold text-ink mb-3">{project.title}</h3>
+                                <p className="text-ink-2 mb-6 leading-relaxed">{project.description}</p>
                                 <div className="flex flex-wrap gap-2 mb-6">
                                     {project.skills.map((skill, i) => (
                                         <span
                                             key={i}
-                                            className="bg-blue-500/10 text-blue-300 border border-blue-400/20 text-xs px-3 py-1 rounded-full font-medium"
+                                            className="bg-blue/10 text-blue border border-blue/20 text-xs px-3 py-1 rounded-full font-medium"
                                         >
                                             {skill}
                                         </span>
@@ -138,7 +138,7 @@ const Projects = () => {
                                             href={link.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/15 text-white rounded-lg hover:bg-blue-600 hover:border-blue-500 transition text-sm font-medium"
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-veil border border-line text-ink rounded-lg hover:bg-blue-600 hover:border-blue-500 hover:text-white transition text-sm font-medium"
                                         >
                                             {idx === 0 ? <FaGithub /> : <FaLink />} {link.label}
                                         </a>
@@ -148,10 +148,10 @@ const Projects = () => {
                         </AnimatePresence>
                     </div>
 
-                    <div className="flex justify-between items-center px-8 py-4 border-t border-white/10 bg-white/5">
+                    <div className="flex justify-between items-center px-8 py-4 border-t border-line bg-veil">
                         <button
                             onClick={prevProject}
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm text-ink-2 hover:text-ink hover:bg-veil-2 rounded-lg transition"
                         >
                             <FaArrowLeft /> Previous
                         </button>
@@ -160,15 +160,15 @@ const Projects = () => {
                                 <button
                                     key={i}
                                     onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
-                                    className={`w-2.5 h-2.5 rounded-full transition ${i === current ? "bg-blue-400 scale-125" : "bg-white/20 hover:bg-white/40"}`}
+                                    className={`w-2.5 h-2.5 rounded-full transition ${i === current ? "bg-blue scale-125" : "bg-ink/20 hover:bg-ink/40"}`}
                                     aria-label={`Go to project ${i + 1}`}
                                 />
                             ))}
                         </div>
-                        <span className="text-slate-400 text-sm">{current + 1} / {projects.length}</span>
+                        <span className="text-ink-3 text-sm">{current + 1} / {projects.length}</span>
                         <button
                             onClick={nextProject}
-                            className="inline-flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm text-ink-2 hover:text-ink hover:bg-veil-2 rounded-lg transition"
                         >
                             Next <FaArrowRight />
                         </button>
@@ -181,7 +181,7 @@ const Projects = () => {
                     href={import.meta.env.VITE_GITHUB_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-blue-300 hover:text-blue-400 transition font-medium"
+                    className="inline-flex items-center gap-2 text-blue hover:opacity-80 transition font-medium"
                 >
                     <FaCode /> See more on GitHub
                 </a>

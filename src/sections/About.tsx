@@ -5,7 +5,7 @@ import Reveal from "../components/Reveal";
 
 const aboutCards = [
     {
-        icon: <FaGraduationCap className="text-blue-400" />,
+        icon: <FaGraduationCap className="text-blue" />,
         title: "Education",
         label: "Bachelor in Computer Application",
         detail: "Reliance College · Nepal",
@@ -13,7 +13,7 @@ const aboutCards = [
         color: "blue",
     },
     {
-        icon: <FaUserTie className="text-purple-400" />,
+        icon: <FaUserTie className="text-purple" />,
         title: "Full Stack Development",
         label: "React · Angular · ASP.NET Core",
         detail: "Responsive UIs with robust APIs",
@@ -21,7 +21,7 @@ const aboutCards = [
         color: "purple",
     },
     {
-        icon: <FaMountain className="text-green-400" />,
+        icon: <FaMountain className="text-green" />,
         title: "Beyond Code",
         label: "Hiking · Traveling · Friends",
         detail: "Balance fuels creativity",
@@ -31,9 +31,9 @@ const aboutCards = [
 ];
 
 const colorConfig = {
-    blue: { icon: "text-blue-400", border: "border-blue-400/20", text: "text-blue-400", accent: "border-blue-500" },
-    purple: { icon: "text-purple-400", border: "border-purple-400/20", text: "text-purple-400", accent: "border-purple-500" },
-    green: { icon: "text-green-400", border: "border-green-400/20", text: "text-green-400", accent: "border-green-500" },
+    blue: { icon: "text-blue", border: "border-blue/20", text: "text-blue", accent: "border-blue" },
+    purple: { icon: "text-purple", border: "border-purple/20", text: "text-purple", accent: "border-purple" },
+    green: { icon: "text-green", border: "border-green/20", text: "text-green", accent: "border-green" },
 } as const;
 
 const About = () => {
@@ -53,18 +53,18 @@ const About = () => {
                                 key={idx}
                                 whileHover={{ x: -8 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                className="relative pl-4 border-l-2 border-transparent group-hover:border-blue-500 transition-colors"
+                                className="relative pl-4 border-l-2 border-transparent group-hover:border-blue transition-colors"
                             >
                                 <div className="flex items-start gap-5 mb-8 last:mb-0">
                                     <div className={`w-12 h-12 rounded-2xl ${c.border} flex items-center justify-center text-xl group-hover:scale-110 transition-transform shrink-0 mt-0.5`}>
                                         {card.icon}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1">
+                                        <p className="text-[10px] font-mono font-bold text-ink-4 uppercase tracking-widest mb-1">
                                             {card.label}
                                         </p>
-                                        <h4 className="text-lg font-bold text-white mb-2">{card.title}</h4>
-                                        <p className="text-gray-300 text-sm leading-relaxed">
+                                        <h4 className="text-lg font-bold text-ink mb-2">{card.title}</h4>
+                                        <p className="text-ink-2 text-sm leading-relaxed">
                                             {card.text}
                                         </p>
                                     </div>

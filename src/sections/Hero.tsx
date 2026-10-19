@@ -55,10 +55,10 @@ function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.6 }}
-                        className="text-blue-400 font-medium mb-4 flex items-center gap-2"
+                        className="text-blue font-medium mb-4 flex items-center gap-2"
                     >
                         <motion.span
-                            className="h-px w-8 bg-blue-400 inline-block"
+                            className="h-px w-8 bg-blue inline-block"
                             animate={{ scaleX: [0.5, 1] }}
                             transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
                         />
@@ -68,14 +68,14 @@ function Hero() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.35, duration: 0.7 }}
-                        className="text-5xl md:text-6xl font-extrabold text-white leading-tight"
+                        className="text-5xl md:text-6xl font-extrabold text-ink leading-tight"
                     >
                         Prashant Giri
                     </motion.h1>
                     <motion.div
                         className="mt-2 text-xl md:text-2xl min-h-[2rem]"
                     >
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-[length:200%_100%] animate-[shimmer_4s_linear_infinite]">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-cyan bg-[length:200%_100%] animate-[shimmer_4s_linear_infinite]">
                             {typed}
                         </span>
                         <span className="animate-blink">|</span>
@@ -84,11 +84,11 @@ function Hero() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.65, duration: 0.7 }}
-                        className="mt-6 text-gray-400 leading-relaxed max-w-lg"
+                        className="mt-6 text-ink-3 leading-relaxed max-w-lg"
                     >
                         Building clean, scalable web applications with{" "}
-                        <span className="text-blue-300 font-medium">.NET Core</span> and{" "}
-                        <span className="text-purple-300 font-medium">Angular</span> on the full stack,
+                        <span className="text-blue font-medium">.NET Core</span> and{" "}
+                        <span className="text-purple font-medium">Angular</span> on the full stack,
                         from robust APIs to polished, responsive frontends.
                     </motion.p>
 
@@ -110,7 +110,7 @@ function Hero() {
                             whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.97 }}
                             href="#contact"
-                            className="inline-flex items-center gap-2 bg-white/5 border border-white/15 hover:bg-white/10 text-white font-medium rounded-lg px-6 py-3 transition"
+                            className="inline-flex items-center gap-2 bg-veil border border-line hover:bg-veil-2 text-ink font-medium rounded-lg px-6 py-3 transition"
                         >
                             <FaArrowDown /> Get In Touch
                         </motion.a>
@@ -127,7 +127,7 @@ function Hero() {
                             href={import.meta.env.VITE_GITHUB_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-slate-400 hover:text-blue-300 transition"
+                            className="text-ink-3 hover:text-blue transition"
                             aria-label="GitHub"
                         >
                             <FaGithub size={24} />
@@ -137,7 +137,7 @@ function Hero() {
                             href={import.meta.env.VITE_LINKEDIN_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-slate-400 hover:text-blue-400 transition"
+                            className="text-ink-3 hover:text-blue transition"
                             aria-label="LinkedIn"
                         >
                             <FaLinkedin size={24} />
@@ -156,30 +156,30 @@ function Hero() {
                         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                         className="relative"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/40 to-purple-600/40 rounded-full blur-2xl scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/40 to-purple-600/40 rounded-full blur-2xl scale-110 light:opacity-70" />
                         <motion.img
                             animate={{ rotate: [0, 1, 0, -1, 0] }}
                             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                             src={profileImg}
                             alt="Prashant Giri"
-                            className="relative w-80 h-80 rounded-full object-cover border-4 border-white/10 shadow-2xl"
+                            className="relative w-80 h-80 rounded-full object-cover border-4 border-line shadow-2xl"
                         />
                         <motion.div
                             animate={{ y: [0, -8, 0] }}
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute -bottom-4 -left-6 bg-slate-900/90 backdrop-blur rounded-xl border border-white/10 px-4 py-3 shadow-xl"
+                            className="absolute -bottom-4 -left-6 bg-panel-2 backdrop-blur rounded-xl border border-line px-4 py-3 shadow-xl"
                         >
-                            <p className="text-xs text-slate-400 flex items-center gap-2">
-                                <FaCode className="text-blue-400" /> Angular + .NET Stack
+                            <p className="text-xs text-ink-3 flex items-center gap-2">
+                                <FaCode className="text-blue" /> Angular + .NET Stack
                             </p>
                         </motion.div>
                         <motion.div
                             animate={{ y: [0, 8, 0] }}
                             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute -top-4 -right-6 bg-slate-900/90 backdrop-blur rounded-xl border border-white/10 px-4 py-3 shadow-xl"
+                            className="absolute -top-4 -right-6 bg-panel-2 backdrop-blur rounded-xl border border-line px-4 py-3 shadow-xl"
                         >
-                            <p className="text-xs text-slate-400 flex items-center gap-2">
-                                <FaDatabase className="text-purple-400" /> REST APIs & EF Core
+                            <p className="text-xs text-ink-3 flex items-center gap-2">
+                                <FaDatabase className="text-purple" /> REST APIs & EF Core
                             </p>
                         </motion.div>
                     </motion.div>

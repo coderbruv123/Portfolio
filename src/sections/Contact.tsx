@@ -23,17 +23,17 @@ const Contact = () => {
                             whileHover={{ y: -6 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             href="mailto:giriprashant516@gmail.com"
-                            className="group w-full bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col items-center justify-center p-8 shadow-xl hover:border-blue-400/40 hover:shadow-blue-500/10 transition"
+                            className="group w-full bg-panel backdrop-blur-md border border-line rounded-2xl flex flex-col items-center justify-center p-8 shadow-xl hover:border-blue/40 hover:shadow-blue-500/10 transition"
                         >
                             <motion.div
                                 whileHover={{ rotate: [0, -12, 12, 0] }}
                                 transition={{ duration: 0.5 }}
-                                className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition"
+                                className="w-14 h-14 rounded-xl bg-blue/10 flex items-center justify-center mb-4 group-hover:scale-110 transition"
                             >
-                                <MdEmail size={28} className="text-blue-400" />
+                                <MdEmail size={28} className="text-blue" />
                             </motion.div>
-                            <h3 className="text-lg font-bold text-white mb-1">Email</h3>
-                            <p className="text-sm text-gray-400 text-center select-all">giriprashant516@gmail.com</p>
+                            <h3 className="text-lg font-bold text-ink mb-1">Email</h3>
+                            <p className="text-sm text-ink-3 text-center select-all">giriprashant516@gmail.com</p>
                         </motion.a>
                     </Reveal>
 
@@ -42,34 +42,34 @@ const Contact = () => {
                             whileHover={{ y: -6 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             href="tel:9818057756"
-                            className="group w-full bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col items-center justify-center p-8 shadow-xl hover:border-purple-400/40 hover:shadow-purple-500/10 transition"
+                            className="group w-full bg-panel backdrop-blur-md border border-line rounded-2xl flex flex-col items-center justify-center p-8 shadow-xl hover:border-purple/40 hover:shadow-purple-500/10 transition"
                         >
                             <motion.div
                                 whileHover={{ rotate: [0, -12, 12, 0] }}
                                 transition={{ duration: 0.5 }}
-                                className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition"
+                                className="w-14 h-14 rounded-xl bg-purple/10 flex items-center justify-center mb-4 group-hover:scale-110 transition"
                             >
-                                <MdPhone size={28} className="text-purple-400" />
+                                <MdPhone size={28} className="text-purple" />
                             </motion.div>
-                            <h3 className="text-lg font-bold text-white mb-1">Phone</h3>
-                            <p className="text-sm text-gray-400 text-center select-all">9818057756</p>
+                            <h3 className="text-lg font-bold text-ink mb-1">Phone</h3>
+                            <p className="text-sm text-ink-3 text-center select-all">9818057756</p>
                         </motion.a>
                     </Reveal>
 
                     <Reveal delay={0.3} className="w-full md:w-64">
-                        <div className="w-full bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col items-center justify-center p-8 shadow-xl">
-                            <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
-                                <MdLocationOn size={28} className="text-green-400" />
+                        <div className="w-full bg-panel backdrop-blur-md border border-line rounded-2xl flex flex-col items-center justify-center p-8 shadow-xl">
+                            <div className="w-14 h-14 rounded-xl bg-green/10 flex items-center justify-center mb-4">
+                                <MdLocationOn size={28} className="text-green" />
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-1">Location</h3>
-                            <p className="text-sm text-gray-400 text-center">Nepal</p>
+                            <h3 className="text-lg font-bold text-ink mb-1">Location</h3>
+                            <p className="text-sm text-ink-3 text-center">Nepal</p>
                             <div className="flex gap-4 mt-3">
                                 <motion.a
                                     whileHover={{ scale: 1.2 }}
                                     href={import.meta.env.VITE_GITHUB_URL}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-slate-400 hover:text-blue-300 transition"
+                                    className="text-ink-3 hover:text-blue transition"
                                     aria-label="GitHub"
                                 >
                                     <FaGithub />
@@ -79,7 +79,7 @@ const Contact = () => {
                                     href={import.meta.env.VITE_LINKEDIN_URL}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-slate-400 hover:text-blue-400 transition"
+                                    className="text-ink-3 hover:text-blue transition"
                                     aria-label="LinkedIn"
                                 >
                                     <FaLinkedin />

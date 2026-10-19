@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { smoothScrollTo } from "../utils/smoothScroll";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
     { label: "About", href: "#about" },
@@ -42,8 +43,8 @@ const Nav = () => {
         <header
             className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
                 scrolled
-                    ? "bg-slate-950/90 backdrop-blur-md border-b border-white/10 shadow-lg"
-                    : "bg-gradient-to-b from-slate-950/70 to-transparent"
+                    ? "bg-surface/90 backdrop-blur-md border-b border-line shadow-lg"
+                    : "bg-gradient-to-b from-surface/70 to-transparent"
             }`}
         >
             <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
@@ -53,9 +54,9 @@ const Nav = () => {
                         e.preventDefault();
                         smoothScrollTo("#hero", 0, 900);
                     }}
-                    className="text-lg font-bold text-white tracking-tight"
+                    className="text-lg font-bold text-ink tracking-tight"
                 >
-                    Prashant<span className="text-blue-400">.Giri</span>
+                    Prashant<span className="text-blue">.Giri</span>
                 </a>
 
                 <ul className="hidden md:flex items-center gap-2">
@@ -72,15 +73,15 @@ const Nav = () => {
                                     }}
                                     className={`relative px-3 py-2 text-sm rounded-lg transition ${
                                         isActive
-                                            ? "text-white"
-                                            : "text-slate-300 hover:text-blue-300"
+                                            ? "text-ink"
+                                            : "text-ink-2 hover:text-blue"
                                     }`}
                                 >
                                     {link.label}
                                     {isActive && (
                                         <motion.span
                                             layoutId="nav-pill"
-                                            className="absolute inset-0 bg-white/10 border border-white/10 rounded-lg -z-10"
+                                            className="absolute inset-0 bg-veil-2 border border-line rounded-lg -z-10"
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                         />
                                     )}
@@ -91,11 +92,12 @@ const Nav = () => {
                 </ul>
 
                 <div className="hidden md:flex items-center gap-4">
+                    <ThemeToggle />
                     <a
                         href={import.meta.env.VITE_GITHUB_URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-slate-300 hover:text-blue-300 transition"
+                        className="text-ink-2 hover:text-blue transition"
                         aria-label="GitHub"
                     >
                         <FaGithub size={18} />
@@ -104,7 +106,7 @@ const Nav = () => {
                         href={import.meta.env.VITE_LINKEDIN_URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-slate-300 hover:text-blue-400 transition"
+                        className="text-ink-2 hover:text-blue transition"
                         aria-label="LinkedIn"
                     >
                         <FaLinkedin size={18} />
@@ -122,17 +124,20 @@ const Nav = () => {
                     </a>
                 </div>
 
-                <button
-                    className="md:hidden text-white text-2xl"
-                    onClick={() => setOpen((o) => !o)}
-                    aria-label="Toggle menu"
-                >
-                    {open ? "×" : "☰"}
-                </button>
+                <div className="flex md:hidden items-center gap-2">
+                    <ThemeToggle />
+                    <button
+                        className="text-ink text-2xl"
+                        onClick={() => setOpen((o) => !o)}
+                        aria-label="Toggle menu"
+                    >
+                        {open ? "×" : "☰"}
+                    </button>
+                </div>
             </nav>
 
             {open && (
-                <div className="md:hidden bg-slate-950/95 backdrop-blur-md border-t border-white/10 px-6 py-4">
+                <div className="md:hidden bg-surface/95 backdrop-blur-md border-t border-line px-6 py-4">
                     <ul className="flex flex-col gap-4">
                         {links.map((link) => (
                             <li key={link.href}>
@@ -143,7 +148,7 @@ const Nav = () => {
                                         smoothScrollTo(link.href);
                                         setOpen(false);
                                     }}
-                                    className="text-slate-300 hover:text-blue-300 transition"
+                                    className="text-ink-2 hover:text-blue transition"
                                 >
                                     {link.label}
                                 </a>

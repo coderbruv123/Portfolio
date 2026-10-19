@@ -1,19 +1,106 @@
 @import "tailwindcss";
 
+/* Class-based light theme: <html class="light"> toggles the palette below */
+@custom-variant light (&:where(.light, .light *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/*
+ * Semantic design tokens. Every utility below resolves to a --c-* variable that
+ * is redefined per theme, so `bg-panel` / `text-ink` / `border-line` "just work"
+ * in both dark and light mode.
+ */
+@theme inline {
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-panel: var(--c-panel);
+  --color-panel-2: var(--c-panel-2);
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-ink-3: var(--c-ink-3);
+  --color-ink-4: var(--c-ink-4);
+  --color-line: var(--c-line);
+  --color-line-2: var(--c-line-2);
+  --color-veil: var(--c-veil);
+  --color-veil-2: var(--c-veil-2);
+  --color-blue: var(--c-blue);
+  --color-purple: var(--c-purple);
+  --color-green: var(--c-green);
+  --color-cyan: var(--c-cyan);
+  --color-red: var(--c-red);
+  --color-yellow: var(--c-yellow);
+  --color-teal: var(--c-teal);
+}
+
+/* Dark palette (default) */
+:root {
+  color-scheme: dark;
+
+  --c-surface: #020617;
+  --c-surface-2: #0b1029;
+  --c-panel: rgb(15 23 42 / 0.6);
+  --c-panel-2: rgb(15 23 42 / 0.92);
+
+  --c-ink: #ffffff;
+  --c-ink-2: #d1d5db;
+  --c-ink-3: #9ca3af;
+  --c-ink-4: #6b7280;
+
+  --c-line: rgb(255 255 255 / 0.1);
+  --c-line-2: rgb(255 255 255 / 0.05);
+  --c-veil: rgb(255 255 255 / 0.05);
+  --c-veil-2: rgb(255 255 255 / 0.1);
+
+  --c-blue: #60a5fa;
+  --c-purple: #a78bfa;
+  --c-green: #4ade80;
+  --c-cyan: #22d3ee;
+  --c-red: #f87171;
+  --c-yellow: #facc15;
+  --c-teal: #2dd4bf;
+}
+
+/* Light palette */
+html.light {
+  color-scheme: light;
+
+  --c-surface: #f2f5fb;
+  --c-surface-2: #e7edf9;
+  --c-panel: rgb(255 255 255 / 0.72);
+  --c-panel-2: rgb(255 255 255 / 0.92);
+
+  --c-ink: #0f172a;
+  --c-ink-2: #374151;
+  --c-ink-3: #566076;
+  --c-ink-4: #64748b;
+
+  --c-line: rgb(15 23 42 / 0.1);
+  --c-line-2: rgb(15 23 42 / 0.06);
+  --c-veil: rgb(15 23 42 / 0.04);
+  --c-veil-2: rgb(15 23 42 / 0.08);
+
+  --c-blue: #2563eb;
+  --c-purple: #7c3aed;
+  --c-green: #16a34a;
+  --c-cyan: #0891b2;
+  --c-red: #dc2626;
+  --c-yellow: #b45309;
+  --c-teal: #0d9488;
+}
+
 html {
-  background-color: #020617;
+  background-color: var(--c-surface);
 }
 
 body {
   margin: 0;
-  background-color: #020617;
-  color: #e2e8f0;
+  background-color: var(--c-surface);
+  color: var(--c-ink);
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.35s ease, color 0.35s ease;
 }
 
 section[id] {
@@ -45,20 +132,20 @@ section[id] {
 }
 
 ::selection {
-  background-color: rgba(59, 130, 246, 0.35);
-  color: white;
+  background-color: color-mix(in srgb, var(--c-blue) 35%, transparent);
+  color: var(--c-ink);
 }
 
 ::-webkit-scrollbar {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: var(--c-surface);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: color-mix(in srgb, var(--c-ink) 18%, transparent);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: color-mix(in srgb, var(--c-ink) 32%, transparent);
 }

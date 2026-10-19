@@ -14,7 +14,7 @@ function App() {
     useSectionScroll();
 
     return (
-        <div className="bg-slate-950 text-gray-100">
+        <div className="bg-surface text-ink">
             <AnimatedBackground />
             <ScrollProgress />
             <Nav />
