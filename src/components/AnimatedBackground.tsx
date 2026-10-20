@@ -1,68 +1,10 @@
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 const AnimatedBackground = () => {
-    const spotlightRef = useRef<HTMLDivElement>(null);
-    const rafRef = useRef<number | null>(null);
-    const cursorPosRef = useRef({ x: 50, y: 30 });
-
-    useEffect(() => {
-        const spotlight = spotlightRef.current;
-        if (!spotlight) return;
-
-        const updateSpotlight = () => {
-            spotlight.style.setProperty('--mx', `${cursorPosRef.current.x}%`);
-            spotlight.style.setProperty('--my', `${cursorPosRef.current.y}%`);
-        };
-
-        const handleMouseMove = (e: MouseEvent) => {
-            cursorPosRef.current.x = (e.clientX / window.innerWidth) * 100;
-            cursorPosRef.current.y = (e.clientY / window.innerHeight) * 100;
-
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-            rafRef.current = requestAnimationFrame(() => {
-                updateSpotlight();
-                rafRef.current = null;
-            });
-        };
-
-        // Touch fallback
-        const handleTouchMove = (e: TouchEvent) => {
-            if (e.touches.length > 0) {
-                const touch = e.touches[0];
-                cursorPosRef.current.x = (touch.clientX / window.innerWidth) * 100;
-                cursorPosRef.current.y = (touch.clientY / window.innerHeight) * 100;
-                if (rafRef.current) cancelAnimationFrame(rafRef.current);
-                rafRef.current = requestAnimationFrame(() => {
-                    updateSpotlight();
-                    rafRef.current = null;
-                });
-            }
-        };
-
-        window.addEventListener('mousemove', handleMouseMove, { passive: true });
-        window.addEventListener('touchmove', handleTouchMove, { passive: true });
-
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('touchmove', handleTouchMove);
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        };
-    }, []);
-
     return (
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-surface">
             {/* Base gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-surface via-surface to-surface-2" />
-
-            {/* Cursor spotlight - CSS var interpolation */}
-            <div
-                ref={spotlightRef}
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: 'radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgb(96 165 250 / .16), rgb(167 139 250 / .08) 40%, transparent 65%)',
-                }}
-            />
 
             {/* Floating orbs */}
             <motion.div
@@ -101,7 +43,7 @@ const AnimatedBackground = () => {
                 className="absolute inset-0 opacity-[0.04] light:opacity-[0.035]"
                 style={{
                     backgroundImage:
-                        "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+                        "url(\\\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\\\")",
                 }}
             />
         </div>
