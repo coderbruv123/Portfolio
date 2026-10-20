@@ -132,11 +132,18 @@ const Projects = () => {
         let currentH = 0;
         let rafId: number;
 
+        // Only active when section is fully within middle 60% of viewport
         const updateActiveState = () => {
             const rect = section.getBoundingClientRect();
-            // Only active when section is within top 20% to 80% of viewport (proper intersection)
-            const inView = rect.top < window.innerHeight * 0.8 && rect.bottom > window.innerHeight * 0.2;
-            setIsActive(inView);
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate if section is fully visible in the middle 60%
+            const sectionTopRatio = rect.top / viewportHeight;
+            const sectionBottomRatio = rect.bottom / viewportHeight;
+            
+            // Only active when section is fully within the middle 60% (between 20% and 80% viewport)
+            const fullyInSection = sectionTopRatio >= 0.2 && sectionBottomRatio <= 0.8;
+            setIsActive(fullyInSection);
         };
 
         const handleWheel = (e: WheelEvent) => {
@@ -160,16 +167,16 @@ const Projects = () => {
             }
         };
 
-        // Use passive: false for wheel
+        // Attach wheel event to track element for precise control
         const wheelHandler = (e: WheelEvent) => handleWheel(e);
-        window.addEventListener('wheel', wheelHandler, { passive: false });
+        track.addEventListener('wheel', wheelHandler, { passive: false });
 
         // Track scroll to update active state
         window.addEventListener('scroll', updateActiveState, { passive: true });
         updateActiveState(); // Initial check
 
         return () => {
-            window.removeEventListener('wheel', wheelHandler);
+            track.removeEventListener('wheel', wheelHandler);
             window.removeEventListener('scroll', updateActiveState);
             if (rafId) cancelAnimationFrame(rafId);
         };
