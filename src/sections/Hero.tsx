@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin, FaArrowDown, FaCode, FaDatabase } from "react-icons/fa";
 import profileImg from '../../public/img.png';
@@ -37,8 +37,54 @@ const useTypewriter = (words: string[]) => {
     return words[index % words.length].substring(0, subIndex);
 };
 
+// Magnetic button effect hook
+const useMagnetic = <T extends HTMLElement>(strength = 0.3) => {
+    const ref = useRef<T>(null);
+
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        let rafId: number;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = (e.clientX - cx) * strength;
+            const dy = (e.clientY - cy) * strength;
+
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                el.style.transform = `translate(${dx}px, ${dy}px)`;
+            });
+        };
+
+        const handleMouseLeave = () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            el.style.transform = '';
+        };
+
+        el.addEventListener('mousemove', handleMouseMove);
+        el.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            el.removeEventListener('mousemove', handleMouseMove);
+            el.removeEventListener('mouseleave', handleMouseLeave);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, [strength]);
+
+    return ref;
+};
+
 function Hero() {
     const typed = useTypewriter(roles);
+
+    const projectsBtnRef = useMagnetic<HTMLButtonElement>(0.35);
+    const contactBtnRef = useMagnetic<HTMLButtonElement>(0.3);
+    const githubRef = useMagnetic<HTMLAnchorElement>(0.15);
+    const linkedinRef = useMagnetic<HTMLAnchorElement>(0.15);
 
     return (
         <section
@@ -78,7 +124,7 @@ function Hero() {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue via-purple to-cyan bg-[length:200%_100%] animate-[shimmer_4s_linear_infinite]">
                             {typed}
                         </span>
-                        <span className="animate-blink">|</span>
+                        <span className="animate-blink">|_</span>
                     </motion.div>
                     <motion.p
                         initial={{ opacity: 0, y: 30 }}
@@ -98,22 +144,24 @@ function Hero() {
                         transition={{ delay: 0.8, duration: 0.7 }}
                         className="mt-8 flex flex-wrap gap-4"
                     >
-                        <motion.a
-                            whileHover={{ scale: 1.05, y: -2 }}
+                        <motion.button
+                            ref={projectsBtnRef}
+                            whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.97 }}
-                            href="#projects"
+                            onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
                             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-6 py-3 transition shadow-lg shadow-blue-600/30"
                         >
                             <FaCode /> View Projects
-                        </motion.a>
-                        <motion.a
-                            whileHover={{ scale: 1.05, y: -2 }}
+                        </motion.button>
+                        <motion.button
+                            ref={contactBtnRef}
+                            whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.97 }}
-                            href="#contact"
+                            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             className="inline-flex items-center gap-2 bg-veil border border-line hover:bg-veil-2 text-ink font-medium rounded-lg px-6 py-3 transition"
                         >
                             <FaArrowDown /> Get In Touch
-                        </motion.a>
+                        </motion.button>
                     </motion.div>
 
                     <motion.div
@@ -123,6 +171,7 @@ function Hero() {
                         className="mt-8 flex items-center gap-4"
                     >
                         <motion.a
+                            ref={githubRef}
                             whileHover={{ scale: 1.15, y: -3 }}
                             href={import.meta.env.VITE_GITHUB_URL}
                             target="_blank"
@@ -133,6 +182,7 @@ function Hero() {
                             <FaGithub size={24} />
                         </motion.a>
                         <motion.a
+                            ref={linkedinRef}
                             whileHover={{ scale: 1.15, y: -3 }}
                             href={import.meta.env.VITE_LINKEDIN_URL}
                             target="_blank"

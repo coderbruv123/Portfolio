@@ -90,17 +90,24 @@ html.light {
   --c-teal: #0d9488;
 }
 
+/*
+ * The canvas background lives on <html> only, and body/wrapper stay
+ * transparent — an opaque background on either would paint over the -z-10
+ * layers (orbs, grid, grain, celestial body) since negative-z positioned
+ * elements paint before in-flow element backgrounds.
+ */
 html {
   background-color: var(--c-surface);
+  transition: background-color 0.35s ease;
 }
 
 body {
   margin: 0;
-  background-color: var(--c-surface);
+  background-color: transparent;
   color: var(--c-ink);
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.35s ease, color 0.35s ease;
+  transition: color 0.35s ease;
 }
 
 section[id] {
@@ -131,9 +138,157 @@ section[id] {
   animation: marquee 28s linear infinite;
 }
 
+/* ---------- Theme sky: night stars + day clouds (ThemeCelestial) ---------- */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.cloud {
+  position: absolute;
+  width: 170px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.85);
+  filter: blur(2px);
+}
+
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.cloud::before { width: 66px; height: 66px; top: -30px; left: 28px; }
+.cloud::after { width: 50px; height: 50px; top: -20px; left: 92px; }
+
+@keyframes drift-a {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(24px); }
+}
+
+@keyframes drift-b {
+  0%, 100% { transform: translateX(0) scale(0.78); }
+  50% { transform: translateX(-28px) scale(0.78); }
+}
+
+.cloud-a { animation: drift-a 14s ease-in-out infinite; }
+.cloud-b { animation: drift-b 18s ease-in-out infinite; }
+
+/*
+ * Stars/clouds cross-fade with a transition only in browsers without the
+ * View Transitions API — with it, the theme snapshot must capture the final
+ * state, and a running transition would be captured mid-fade.
+ */
+.sky-fade {
+  transition: opacity 0.6s ease;
+}
+
+@supports (view-transition-name: none) {
+  .sky-fade {
+    transition: none;
+  }
+}
+
 ::selection {
   background-color: color-mix(in srgb, var(--c-blue) 35%, transparent);
   color: var(--c-ink);
+}
+
+/*
+ * View Transitions: switching theme sends a soft ring of light sweeping out
+ * from the center of the screen — the new palette is revealed behind a
+ * feathered radial edge while a thin accent ring races just ahead of it.
+ * All CSS; the only JS is startViewTransition() in useTheme.ts.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: vt-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 0%, transparent 6%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 0%, transparent 6%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@keyframes vt-reveal {
+  to {
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 132%, #000 132%, transparent 140%);
+    mask-image: radial-gradient(circle at 50% 50%, #000 132%, #000 132%, transparent 140%);
+  }
+}
+
+/* The fade-line: a thin accent ring that expands from the center and dissolves */
+::view-transition-image-pair(root)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--c-blue) 85%, transparent);
+  box-shadow:
+    0 0 24px color-mix(in srgb, var(--c-blue) 55%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--c-blue) 35%, transparent);
+  pointer-events: none;
+  animation: vt-ring 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes vt-ring {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.45;
+  }
+  100% {
+    width: 300vmax;
+    height: 300vmax;
+    opacity: 0;
+  }
+}
+
+/* Sun/moon icon morphs between palettes instead of hard-swapping */
+::view-transition-group(theme-icon) {
+  animation-duration: 0.5s;
+}
+
+/* Celestial body glides across the sky in sync with the ring of light */
+::view-transition-group(theme-astro) {
+  animation-duration: 0.95s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) {
+    animation-duration: 0.12s;
+  }
+  ::view-transition-group(theme-icon),
+  ::view-transition-group(theme-astro) {
+    animation-duration: 0.12s;
+  }
+  ::view-transition-image-pair(root)::after {
+    display: none;
+  }
 }
 
 ::-webkit-scrollbar {

@@ -1,4 +1,5 @@
 import { useCallback, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 
 export type Theme = "light" | "dark";
 
@@ -34,11 +35,26 @@ apply();
 
 export const getTheme = (): Theme => current;
 
-export const setTheme = (next: Theme) => {
-    if (next === current) return;
+const commit = (next: Theme) => {
     current = next;
     apply();
     listeners.forEach((listener) => listener());
+};
+
+export const setTheme = (next: Theme) => {
+    if (next === current) return;
+    // Morph the whole page with the View Transitions API when available —
+    // an expanding ring of light reveals the new palette from the center
+    // (see index.css). Otherwise fall back to a plain swap.
+    if (typeof document.startViewTransition === "function") {
+        document.startViewTransition(() => {
+            // flushSync guarantees the DOM is updated before the new snapshot
+            // is captured (documented React + View Transitions pattern).
+            flushSync(() => commit(next));
+        });
+    } else {
+        commit(next);
+    }
 };
 
 export const toggleTheme = () => setTheme(current === "light" ? "dark" : "light");

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 05 — Native CSS scroll-driven animations</title>
+<style>
+  :root { --bg:#020617; --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa; --panel:rgb(15 23 42/.6); --line:rgb(255 255 255/.1); }
+  html.light { --bg:#f2f5fb; --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed; --panel:rgb(255 255 255/.72); --line:rgb(15 23 42/.1); }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+
+  /* Trend: scroll progress via animation-timeline — replaces JS scroll listeners entirely */
+  .progress {
+    position:fixed; top:0; left:0; height:3px; width:100%; transform-origin:0 50%; transform:scaleX(0);
+    background:linear-gradient(90deg, var(--blue), var(--purple)); z-index:99;
+  }
+  @supports (animation-timeline: scroll()) {
+    .progress { animation:grow linear both; animation-timeline:scroll(root); }
+  }
+  @keyframes grow { to { transform:scaleX(1); } }
+
+  .chip {
+    position:fixed; top:14px; left:14px; z-index:98; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3);
+    padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px);
+  }
+  .chip code { color:var(--blue); }
+
+  header { min-height:88vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:80px 24px 20px; }
+  h1 { font-size:clamp(32px,6vw,54px); margin:0 0 14px; letter-spacing:-.02em; }
+  p { color:var(--ink2); max-width:560px; line-height:1.7; font-size:15px; }
+  .badge { display:inline-block; margin-top:18px; font-size:12px; color:var(--blue); border:1px solid rgb(96 165 250/.3); background:rgb(96 165 250/.08); padding:7px 14px; border-radius:999px; }
+  .kbd { font-family:ui-monospace,monospace; }
+  .theme-btn {
+    position:fixed; top:12px; right:12px; z-index:99; font:inherit; font-size:12px; font-weight:600;
+    color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:999px;
+    padding:8px 14px; cursor:pointer; backdrop-filter:blur(8px); transition:border-color .2s ease;
+  }
+  .theme-btn:hover { border-color:var(--blue); }
+
+  .grid { max-width:1000px; margin:0 auto; padding:40px 24px 30vh; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; }
+  .card {
+    padding:26px; border-radius:18px; border:1px solid var(--line); background:var(--panel);
+    /* The trend: NO framer-motion, NO IntersectionObserver — pure CSS, driven by scroll position */
+    animation:rise linear both;
+    animation-timeline:view();
+    animation-range:entry 5% cover 32%;
+  }
+  @keyframes rise {
+    from { opacity:0; transform:translateY(70px) scale(.96); }
+    to   { opacity:1; transform:none; }
+  }
+  .card .icon { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; font-size:20px; margin-bottom:14px; background:rgb(96 165 250/.12); }
+  .card h3 { margin:0 0 8px; font-size:17px; }
+  .card p { margin:0; font-size:13px; color:var(--ink3); line-height:1.6; }
+
+  /* Fallback (e.g. Firefox): if scroll timelines are unsupported, just show everything */
+  @supports not (animation-timeline: view()) {
+    .card { opacity:1; transform:none; animation:none; }
+    .progress { animation:grow .3s linear both; }
+    .fallback-note { display:block !important; }
+  }
+  .fallback-note { display:none; margin-top:8px; font-size:12px; color:var(--ink3); }
+</style>
+</head>
+<body>
+  <div class="progress"></div>
+  <div class="chip">MOCK 05 / 10 &nbsp;·&nbsp; CSS scroll-driven animations &nbsp;→&nbsp; <code>src/components/Reveal.tsx</code> &amp; <code>ScrollProgress.tsx</code></div>
+  <button class="theme-btn" id="themeBtn">☀️ Light</button>
+  <header>
+    <h1>Zero-JS motion</h1>
+    <p>Every card below animates in as you scroll — but there is <b>no JavaScript running</b>. No Framer Motion, no IntersectionObserver, no scroll listeners. The browser ties animations directly to your scroll position with <span class="kbd">animation-timeline</span>.</p>
+    <span class="badge">Ships in Chrome/Edge &amp; Safari 26 · Firefox behind a flag → always pair with a fallback</span>
+    <span class="fallback-note">(You're seeing the fallback right now — cards render statically.)</span>
+  </header>
+  <div class="grid" id="grid"></div>
+<script>
+  const items = [
+    ['⚛️','React 19','Actions, use(), and the compiler — less boilerplate per component.'],
+    ['🎨','Tailwind v4','CSS-first config via @theme. You already use it — tokens live in index.css.'],
+    ['🎬','View Transitions','Native morphs between states instead of hand-rolled crossfades.'],
+    ['📜','Scroll timelines','What you are looking at. Animations owned by the scroll, not JS.'],
+    ['🪝','Pipelines','View Transitions + React 19 + Tailwind v4 is the 2026 default stack.'],
+    ['♿','Reduced motion','Wrap any keyframe animation in a prefers-reduced-motion guard.'],
+    ['📦','Lean bundles','Dead deps get noticed. Ship only what you import.'],
+    ['🧭','Command palette','⌘K navigation says "developer tooling mindset" instantly.'],
+    ['🕹️','Micro-games','One easter egg, tastefully done, is remembered for weeks.'],
+  ];
+  document.getElementById('grid').innerHTML = items.map(([i,t,d]) =>
+    `<div class="card"><div class="icon">${i}</div><h3>${t}</h3><p>${d}</p></div>`).join('');
+  const tb = document.getElementById('themeBtn');
+  tb.addEventListener('click', () => {
+    const light = document.documentElement.classList.toggle('light');
+    tb.textContent = light ? '🌙 Dark' : '☀️ Light';
+  });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { smoothScrollTo } from "../utils/smoothScroll";
@@ -12,10 +12,55 @@ const links = [
     { label: "Contact", href: "#contact" },
 ];
 
+// Magnetic button effect
+const useMagnetic = (strength = 0.3) => {
+    const ref = useRef<HTMLAnchorElement>(null);
+
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        let rafId: number;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = (e.clientX - cx) * strength;
+            const dy = (e.clientY - cy) * strength;
+
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                el.style.transform = `translate(${dx}px, ${dy}px)`;
+            });
+        };
+
+        const handleMouseLeave = () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            el.style.transform = '';
+        };
+
+        el.addEventListener('mousemove', handleMouseMove);
+        el.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            el.removeEventListener('mousemove', handleMouseMove);
+            el.removeEventListener('mouseleave', handleMouseLeave);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, [strength]);
+
+    return ref;
+};
+
 const Nav = () => {
     const [scrolled, setScrolled] = useState(false);
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState("");
+
+    const hireRef = useMagnetic(0.25);
+    const githubRef = useMagnetic(0.15);
+    const linkedinRef = useMagnetic(0.15);
 
     useEffect(() => {
         const onScroll = () => {
@@ -94,6 +139,7 @@ const Nav = () => {
                 <div className="hidden md:flex items-center gap-4">
                     <ThemeToggle />
                     <a
+                        ref={githubRef}
                         href={import.meta.env.VITE_GITHUB_URL}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -103,6 +149,7 @@ const Nav = () => {
                         <FaGithub size={18} />
                     </a>
                     <a
+                        ref={linkedinRef}
                         href={import.meta.env.VITE_LINKEDIN_URL}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -112,6 +159,7 @@ const Nav = () => {
                         <FaLinkedin size={18} />
                     </a>
                     <a
+                        ref={hireRef}
                         href="#contact"
                         onClick={(e) => {
                             e.preventDefault();

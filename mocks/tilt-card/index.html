@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 06 — 3D tilt project card</title>
+<style>
+  :root { --bg:#020617; --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa; --cyan:#22d3ee;
+          --panel:rgb(15 23 42/.6); --line:rgb(255 255 255/.1); --screen:rgb(2 6 23/.8); --veil:rgb(255 255 255/.05); }
+  html.light { --bg:#f2f5fb; --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed; --cyan:#0891b2;
+          --panel:rgb(255 255 255/.72); --line:rgb(15 23 42/.1); --screen:rgb(231 237 249/.9); --veil:rgb(15 23 42/.04); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+         font-family:Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink);
+         transition:background-color .35s ease, color .35s ease; padding:80px 20px; }
+  .chip { position:fixed; top:14px; left:14px; z-index:99; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3); padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px); }
+  .chip code { color:var(--blue); }
+  .theme-btn { position:fixed; top:12px; right:12px; z-index:99; font:inherit; font-size:12px; font-weight:600;
+    color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 14px; cursor:pointer; backdrop-filter:blur(8px); }
+  .theme-btn:hover { border-color:var(--blue); }
+
+  h1 { font-size:clamp(26px,4vw,38px); margin:0; letter-spacing:-.02em; }
+  .sub { color:var(--ink3); font-size:13px; margin:0 0 34px; }
+
+  .stage { perspective:1100px; }
+  .card {
+    width:min(400px, 92vw); border-radius:22px; border:1px solid var(--line); background:var(--panel);
+    backdrop-filter:blur(14px); overflow:hidden; position:relative;
+    transform-style:preserve-3d; transition:transform .5s cubic-bezier(.16,1,.3,1), box-shadow .4s ease;
+    box-shadow:0 30px 80px rgb(0 0 0/.35);
+  }
+  .card.tracking { transition:box-shadow .4s ease; }
+  .card:hover { box-shadow:0 40px 100px rgb(0 0 0/.5); }
+  html.light .card { box-shadow:0 30px 70px rgb(15 23 42/.15); }
+
+  /* Fake project screen */
+  .screen {
+    height:190px; background:linear-gradient(135deg, var(--blue), var(--purple)); position:relative;
+    display:flex; align-items:flex-end; padding:14px; transform:translateZ(38px);
+  }
+  .screen::before { content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(to bottom, rgb(255 255 255/.08) 0 1px, transparent 1px 28px); }
+  .win { width:100%; height:130px; background:var(--screen); border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:0;
+         display:flex; flex-direction:column; transform:translateZ(14px); }
+  .win .bar { height:22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:5px; padding:0 10px; }
+  .win .dot { width:7px; height:7px; border-radius:50%; background:var(--line); }
+  .win .body { flex:1; padding:12px; display:grid; gap:7px; align-content:start; }
+  .win .line { height:8px; border-radius:4px; background:var(--veil); }
+  .win .line:nth-child(2) { width:70%; } .win .line:nth-child(3) { width:45%; }
+
+  .meta { padding:20px 22px 22px; transform:translateZ(24px); }
+  .meta h3 { margin:0 0 6px; font-size:19px; }
+  .meta p { margin:0 0 14px; font-size:13px; color:var(--ink3); line-height:1.5; }
+  .tags { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px; }
+  .tag { font-size:11px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent);
+         border:1px solid color-mix(in srgb, var(--blue) 25%, transparent); padding:4px 11px; border-radius:999px; }
+  .cta { display:inline-flex; align-items:center; gap:8px; font:inherit; font-size:13px; font-weight:600; color:#fff;
+         background:#2563eb; border:0; border-radius:10px; padding:10px 18px; cursor:pointer; transform:translateZ(30px); }
+  .cta:hover { background:#3b82f6; }
+
+  /* Glare that tracks the pointer */
+  .glare { position:absolute; inset:0; pointer-events:none; border-radius:22px;
+    background:radial-gradient(300px circle at var(--gx,50%) var(--gy,50%), rgb(255 255 255/.16), transparent 60%); opacity:0; transition:opacity .3s ease; }
+  .card.tracking .glare { opacity:1; }
+  .hint { margin-top:26px; font-size:12px; color:var(--ink3); }
+</style>
+</head>
+<body>
+  <div class="chip">MOCK 06 / 10 &nbsp;·&nbsp; 3D tilt project card &nbsp;→&nbsp; <code>src/sections/Projects.tsx</code></div>
+  <button class="theme-btn" id="themeBtn">☀️ Light</button>
+  <h1>Tilt me</h1>
+  <p class="sub">Move your mouse over the card — layers sit at different depths (translateZ), with a glare tracking the pointer.</p>
+
+  <div class="stage">
+    <div class="card" id="card">
+      <div class="screen">
+        <div class="win">
+          <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="body"><span class="line"></span><span class="line"></span><span class="line"></span></div>
+        </div>
+      </div>
+      <div class="meta">
+        <h3>Ecommerce Web</h3>
+        <p>An ongoing e-commerce platform with product listings, cart flow, and a .NET API backend.</p>
+        <div class="tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">ASP.NET Core</span></div>
+        <button class="cta">⌘ View Code</button>
+      </div>
+      <div class="glare"></div>
+    </div>
+  </div>
+  <p class="hint">Pure CSS 3D — no React Three Fiber needed for this effect. R3F is only worth it if you want a real mesh/model.</p>
+
+<script>
+  const card = document.getElementById('card');
+  const stage = card.parentElement;
+  stage.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;   // 0..1
+    const py = (e.clientY - r.top) / r.height;   // 0..1
+    card.classList.add('tracking');
+    card.style.transition = 'box-shadow .4s ease';
+    card.style.transform = `rotateY(${(px - .5) * 16}deg) rotateX(${(.5 - py) * 14}deg) scale(1.02)`;
+    card.style.setProperty('--gx', px * 100 + '%');
+    card.style.setProperty('--gy', py * 100 + '%');
+  });
+  stage.addEventListener('mouseleave', () => {
+    card.classList.remove('tracking');
+    card.style.transition = 'transform .7s cubic-bezier(.16,1,.3,1), box-shadow .4s ease';
+    card.style.transform = '';
+  });
+  const tb = document.getElementById('themeBtn');
+  tb.addEventListener('click', () => {
+    const light = document.documentElement.classList.toggle('light');
+    tb.textContent = light ? '🌙 Dark' : '☀️ Light';
+  });
+</script>
+</body>
+</html>

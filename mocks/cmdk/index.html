@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 07 — ⌘K command palette</title>
+<style>
+  :root { --bg:#020617; --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa;
+          --panel:rgb(15 23 42/.6); --panel2:rgb(15 23 42/.95); --line:rgb(255 255 255/.1); --veil:rgb(255 255 255/.05); --veil2:rgb(255 255 255/.1); }
+  html.light { --bg:#f2f5fb; --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed;
+          --panel:rgb(255 255 255/.72); --panel2:rgb(255 255 255/.96); --line:rgb(15 23 42/.1); --veil:rgb(15 23 42/.04); --veil2:rgb(15 23 42/.08); }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink);
+         transition:background-color .35s ease, color .35s ease; }
+  .chip { position:fixed; top:14px; left:14px; z-index:99; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3); padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px); }
+  .chip code { color:var(--blue); }
+  .theme-btn { position:fixed; top:12px; right:12px; z-index:99; font:inherit; font-size:12px; font-weight:600;
+    color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 14px; cursor:pointer; backdrop-filter:blur(8px); }
+  .theme-btn:hover { border-color:var(--blue); }
+
+  header { padding:110px 24px 30px; text-align:center; }
+  h1 { font-size:clamp(30px,5vw,46px); margin:0 0 12px; letter-spacing:-.02em; }
+  .sub { color:var(--ink2); max-width:520px; margin:0 auto; line-height:1.6; font-size:14px; }
+  .open-hint { margin-top:22px; font-size:13px; }
+  kbd { font-family:ui-monospace,monospace; font-size:12px; background:var(--veil2); border:1px solid var(--line);
+        border-radius:6px; padding:3px 8px; }
+  .open-btn { font:inherit; font-size:13px; font-weight:600; color:var(--ink); background:var(--veil2);
+              border:1px solid var(--line); border-radius:10px; padding:10px 18px; cursor:pointer; margin-left:8px; }
+  .open-btn:hover { border-color:var(--blue); }
+  section { max-width:560px; margin:0 auto; padding:60px 24px; }
+  section h2 { color:var(--blue); font-family:ui-monospace,monospace; font-size:13px; letter-spacing:.2em; text-transform:uppercase; }
+  section p { color:var(--ink2); line-height:1.7; font-size:14px; }
+
+  /* ---- Palette overlay ---- */
+  .overlay { position:fixed; inset:0; z-index:200; display:none; align-items:flex-start; justify-content:center;
+             background:rgb(2 6 23/.6); backdrop-filter:blur(6px); padding:14vh 20px 20px; }
+  .overlay.open { display:flex; }
+  html.light .overlay { background:rgb(15 23 42/.3); }
+  .palette { width:min(560px, 94vw); background:var(--panel2); border:1px solid var(--line); border-radius:18px;
+             box-shadow:0 40px 120px rgb(0 0 0/.5); overflow:hidden; backdrop-filter:blur(20px);
+             animation:pop .18s ease both; }
+  @keyframes pop { from { opacity:0; transform:translateY(-10px) scale(.98); } }
+  .palette input { width:100%; font:inherit; font-size:16px; color:var(--ink); background:transparent;
+                   border:0; border-bottom:1px solid var(--line); padding:18px 20px; outline:none; }
+  .palette input::placeholder { color:var(--ink3); }
+  .results { list-style:none; margin:0; padding:8px; max-height:320px; overflow:auto; }
+  .results li { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:11px; cursor:pointer; font-size:14px; }
+  .results li.active { background:var(--veil2); }
+  .results .ico { width:30px; height:30px; border-radius:9px; background:var(--veil2); display:grid; place-items:center; font-size:14px; flex-shrink:0; }
+  .results .lbl { flex:1; }
+  .results .lbl b { color:var(--blue); font-weight:700; }
+  .results .kind { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); }
+  .empty { padding:26px; text-align:center; color:var(--ink3); font-size:13px; }
+  .foot { border-top:1px solid var(--line); padding:10px 16px; display:flex; gap:16px; font-size:11px; color:var(--ink3); }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--panel2); color:var(--ink);
+           border:1px solid var(--line); padding:10px 18px; border-radius:999px; font-size:13px; opacity:0; transition:opacity .25s ease, transform .25s ease; z-index:300; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(-4px); }
+</style>
+</head>
+<body>
+  <div class="chip">MOCK 07 / 10 &nbsp;·&nbsp; ⌘K command palette &nbsp;→&nbsp; new component + <code>src/App.tsx</code></div>
+  <button class="theme-btn" id="themeBtn">☀️ Light</button>
+
+  <header>
+    <h1>Everything, one keystroke away</h1>
+    <p class="sub">A command palette over your whole portfolio: jump to sections, open projects, copy your email, fire off GitHub/LinkedIn. No dependencies — fuzzy matching in ~30 lines.</p>
+    <p class="open-hint">Press <kbd>⌘</kbd><kbd>K</kbd> (or <kbd>Ctrl</kbd><kbd>K</kbd>) <button class="open-btn" id="openBtn">or click here</button></p>
+  </header>
+  <section id="about"><h2>About</h2><p>Palette items scroll to real anchors on the real site — this section exists so "Go to About" has somewhere to land.</p></section>
+  <section id="skills"><h2>Skills</h2><p>Skills, grouped honestly: core vs familiar.</p></section>
+  <section id="projects"><h2>Projects</h2><p>Each project is an item in the palette, so a visitor who already knows what they want skips the carousel entirely.</p></section>
+  <section id="contact"><h2>Contact</h2><p>"Copy email" is usually the single most-used palette action on a portfolio.</p></section>
+
+  <div class="overlay" id="overlay">
+    <div class="palette" role="dialog" aria-label="Command palette">
+      <input id="input" placeholder="Type a command or search…" autocomplete="off" />
+      <ul class="results" id="results"></ul>
+      <div class="foot"><span>↑↓ navigate</span><span>↵ select</span><span>esc close</span></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+  const ITEMS = [
+    { icon:'👤', label:'About Me',        kind:'Section', keywords:'about bio education',            run:()=>go('about') },
+    { icon:'🛠️', label:'Skills',           kind:'Section', keywords:'skills tech stack',             run:()=>go('skills') },
+    { icon:'🛍️', label:'Ecommerce Web',    kind:'Project', keywords:'ecommerce react asp.net',       run:()=>go('projects') },
+    { icon:'🎬', label:'Cinema API',       kind:'Project', keywords:'cinema api dotnet ef',          run:()=>go('projects') },
+    { icon:'✅', label:'Simple Todo List', kind:'Project', keywords:'todo jwt react api',            run:()=>go('projects') },
+    { icon:'📝', label:'Personal Blog Web',kind:'Project', keywords:'blog javascript asp.net',       run:()=>go('projects') },
+    { icon:'✉️', label:'Copy email',        kind:'Action',  keywords:'copy email giriprashant516',    run:()=>copy('giriprashant516@gmail.com','Email copied to clipboard') },
+    { icon:'🐙', label:'Open GitHub',      kind:'Link',    keywords:'github code repos',             run:()=>toast('Would open GitHub ↗') },
+    { icon:'💼', label:'Open LinkedIn',    kind:'Link',    keywords:'linkedin hire jobs',            run:()=>toast('Would open LinkedIn ↗') },
+    { icon:'📩', label:'Go to Contact',    kind:'Section', keywords:'contact hire reach email',      run:()=>go('contact') },
+  ];
+  const overlay = document.getElementById('overlay'), input = document.getElementById('input'),
+        results = document.getElementById('results'), toastEl = document.getElementById('toast');
+  let matches = [], active = 0, toastT;
+
+  // subsequence fuzzy score — closer/contiguous = higher
+  const score = (q, s) => {
+    q = q.toLowerCase(); s = s.toLowerCase();
+    if (!q) return 1;
+    if (s.startsWith(q)) return 1000 - s.length;
+    let qi = 0, sc = 0, streak = 0;
+    for (let i = 0; i < s.length && qi < q.length; i++) {
+      if (s[i] === q[qi]) { qi++; sc += 10 + streak * 2; streak++; } else streak = 0;
+    }
+    return qi === q.length ? sc : 0;
+  };
+  const hi = (label, q) => {
+    if (!q) return label;
+    const idx = label.toLowerCase().indexOf(q.toLowerCase());
+    if (idx < 0) return label;
+    return label.slice(0, idx) + '<b>' + label.slice(idx, idx + q.length) + '</b>' + label.slice(idx + q.length);
+  };
+  function render(q = '') {
+    matches = ITEMS.map(it => ({ it, s: Math.max(score(q, it.label), score(q, it.keywords) * 0.6) }))
+                   .filter(m => m.s > 0).sort((a, b) => b.s - a.s).slice(0, 8);
+    active = 0;
+    results.innerHTML = matches.length
+      ? matches.map((m, i) => `<li data-i="${i}" class="${i === 0 ? 'active' : ''}"><span class="ico">${m.it.icon}</span><span class="lbl">${hi(m.it.label, q)}</span><span class="kind">${m.it.kind}</span></li>`).join('')
+      : '<div class="empty">No results</div>';
+  }
+  function open() { overlay.classList.add('open'); input.value = ''; render(); input.focus(); }
+  function close() { overlay.classList.remove('open'); }
+  function run(i) { close(); matches[i]?.it.run(); }
+  function go(id) { document.getElementById(id).scrollIntoView({ behavior:'smooth' }); }
+  function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 1800); }
+  async function copy(text, msg) { try { await navigator.clipboard.writeText(text); toast(msg); } catch { toast(text); } }
+
+  document.getElementById('openBtn').addEventListener('click', open);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  input.addEventListener('input', () => render(input.value));
+  results.addEventListener('click', e => { const li = e.target.closest('li[data-i]'); if (li) run(+li.dataset.i); });
+  window.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); overlay.classList.contains('open') ? close() : open(); return; }
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, matches.length - 1); paint(); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); active = Math.max(active - 1, 0); paint(); }
+    else if (e.key === 'Enter')     { e.preventDefault(); run(active); }
+  });
+  function paint() { [...results.children].forEach((li, i) => li?.classList?.toggle('active', i === active)); }
+  const tb = document.getElementById('themeBtn');
+  tb.addEventListener('click', () => {
+    const light = document.documentElement.classList.toggle('light');
+    tb.textContent = light ? '🌙 Dark' : '☀️ Light';
+  });
+</script>
+</body>
+</html>

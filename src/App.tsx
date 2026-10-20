@@ -6,16 +6,15 @@ import Projects from "./sections/Projects";
 import Contact from "./sections/Contact";
 import Nav from "./components/Nav";
 import AnimatedBackground from "./components/AnimatedBackground";
+import ThemeCelestial from "./components/ThemeCelestial";
 import ScrollProgress from "./components/ScrollProgress";
-import { useSectionScroll } from "./hooks/useSectionScroll";
 import './App.css'
 
 function App() {
-    useSectionScroll();
-
     return (
-        <div className="bg-surface text-ink">
+        <div className="text-ink">
             <AnimatedBackground />
+            <ThemeCelestial />
             <ScrollProgress />
             <Nav />
             <main>

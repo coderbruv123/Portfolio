@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 02 v2 — View Transitions theme toggle</title>
+<style>
+  :root {
+    --bg:#020617; --bg2:#0b1029; --panel:rgb(15 23 42/.6); --line:rgb(255 255 255/.1);
+    --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa; --cyan:#22d3ee;
+    --hill1:#0a1128; --hill2:#060b1c; --tx:50%; --ty:0px;
+  }
+  html.light {
+    --bg:#f2f5fb; --bg2:#dbe6fb; --panel:rgb(255 255 255/.72); --line:rgb(15 23 42/.1);
+    --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed; --cyan:#0891b2;
+    --hill1:#c7d9f5; --hill2:#b4cbf0;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; min-height:100vh; overflow-x:hidden;
+    font-family:Inter, ui-sans-serif, system-ui, sans-serif;
+    background:linear-gradient(180deg, var(--bg2), var(--bg) 55%); color:var(--ink);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition:background-color .35s ease, color .35s ease;
+  }
+  .chip { position:fixed; top:14px; left:14px; z-index:99; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3); padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px); }
+  .chip code { color:var(--blue); }
+
+  /* ---------- Living scene: night ↔ day, key elements morph via view-transition-name ---------- */
+  .scene { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+  .astro {
+    position:fixed; top:14%; left:72%; width:68px; height:68px; border-radius:50%;
+    display:grid; place-items:center; font-size:36px; line-height:1;
+    view-transition-name:astro;                       /* ← the morph anchor */
+    background:radial-gradient(circle, rgb(96 165 250/.25), transparent 70%);
+    box-shadow:0 0 60px rgb(96 165 250/.35);
+    transition:none;
+  }
+  html.light .astro {
+    left:22%; top:12%;
+    background:radial-gradient(circle, rgb(250 204 21/.3), transparent 70%);
+    box-shadow:0 0 80px rgb(250 204 21/.45);
+  }
+  .stars { position:absolute; inset:0; transition:opacity .3s ease; }
+  html.light .stars { opacity:0; }
+  .star { position:absolute; width:2px; height:2px; border-radius:50%; background:#fff; animation:twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:.25} 50%{opacity:1} }
+  .cloud { position:absolute; width:180px; height:44px; border-radius:999px; background:rgb(255 255 255/.85);
+           filter:blur(2px); opacity:0; transition:opacity .4s ease, transform 8s ease-in-out; }
+  .cloud::before, .cloud::after { content:""; position:absolute; border-radius:50%; background:inherit; }
+  .cloud::before { width:70px; height:70px; top:-32px; left:30px; }
+  .cloud::after { width:52px; height:52px; top:-22px; left:96px; }
+  html.light .cloud { opacity:.9; }
+  .c1 { top:20%; left:8%; } .c2 { top:34%; right:6%; width:150px; transform:scale(.8); }
+  html.light .c1 { transform:translateX(20px); } html.light .c2 { transform:translateX(-24px) scale(.8); }
+  .hill { position:absolute; left:-10%; right:-10%; border-radius:50% 50% 0 0; }
+  .hill.h1 { bottom:-38vh; height:70vh; background:var(--hill1); }
+  .hill.h2 { bottom:-46vh; height:72vh; left:-30%; right:-30%; background:var(--hill2); }
+
+  /* ---------- Panel ---------- */
+  .card { max-width:520px; width:calc(100% - 40px); padding:38px 34px; text-align:center; position:relative; z-index:2;
+    background:var(--panel); border:1px solid var(--line); border-radius:24px; backdrop-filter:blur(16px);
+    box-shadow:0 30px 90px rgb(0 0 0/.35); }
+  html.light .card { box-shadow:0 30px 70px rgb(15 23 42/.12); }
+  .card h1 { margin:0 0 10px; font-size:clamp(24px,4vw,34px); letter-spacing:-.02em; }
+  .card > p { margin:0 0 26px; color:var(--ink2); font-size:14px; line-height:1.65; }
+
+  #bigToggle {
+    font:inherit; font-size:15px; font-weight:700; color:var(--ink); cursor:pointer;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:15px 30px;
+    display:inline-flex; align-items:center; gap:12px; transition:border-color .2s ease, transform .15s ease;
+  }
+  #bigToggle:hover { border-color:var(--blue); transform:translateY(-2px); }
+  #togIco { display:inline-grid; place-items:center; width:26px; height:26px; font-size:20px;
+            view-transition-name:togico; }        /* icon itself morphs */
+  .hint { margin-top:10px; font-size:11.5px; color:var(--ink3); }
+
+  .styles { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:26px 0 8px; }
+  .styles button {
+    font:inherit; font-size:12px; font-weight:600; color:var(--ink3); cursor:pointer;
+    background:transparent; border:1px solid var(--line); border-radius:999px; padding:7px 14px; transition:all .18s ease;
+  }
+  .styles button:hover { color:var(--ink); border-color:var(--blue); }
+  .styles button.sel { color:var(--blue); border-color:var(--blue); background:color-mix(in srgb, var(--blue) 10%, transparent); }
+  .status { margin-top:14px; font-family:ui-monospace,monospace; font-size:11px; color:var(--ink3); min-height:2.6em; line-height:1.7; word-break:break-word; }
+  .status b { color:var(--blue); font-weight:600; }
+
+  /* ================= reveal styles ================= */
+  ::view-transition-old(root), ::view-transition-new(root) { animation:none; mix-blend-mode:normal; }
+
+  /* 1 · Circle — old collapses to a dot at the cursor, new blooms out of it */
+  html[data-style="circle"] ::view-transition-old(root) { animation:shrink .55s cubic-bezier(.22,1.6,.36,1) both; }
+  html[data-style="circle"] ::view-transition-new(root) { animation:bloom .65s cubic-bezier(.22,1.6,.36,1) both; }
+  @keyframes shrink { to { clip-path:circle(0% at var(--tx) var(--ty)); } }
+  @keyframes bloom  { from { clip-path:circle(0% at var(--tx) var(--ty)); } to { clip-path:circle(150% at var(--tx) var(--ty)); } }
+
+  /* 2 · Wipe — new theme sweeps across from the side you clicked */
+  html[data-style="wipe"] ::view-transition-old(root) { animation:wipeOut .5s cubic-bezier(.65,0,.35,1) both; }
+  html[data-style="wipe"] ::view-transition-new(root) { animation:wipeIn .5s cubic-bezier(.65,0,.35,1) both; }
+  @keyframes wipeOut { to { clip-path:inset(0 0 0 100%); } }
+  @keyframes wipeIn  { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0); } }
+
+  /* 3 · Zoom — old blows past you and blurs out, new settles in from above */
+  html[data-style="zoom"] ::view-transition-old(root) { animation:zoomOut .5s cubic-bezier(.4,0,.6,1) both; }
+  html[data-style="zoom"] ::view-transition-new(root) { animation:zoomIn .6s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes zoomOut { to { transform:scale(1.25); filter:blur(14px); opacity:0; } }
+  @keyframes zoomIn  { from { transform:scale(.82); filter:blur(10px); opacity:0; } to { transform:none; filter:blur(0); opacity:1; } }
+
+  /* 4 · Iris — slow cinematic circle, but from the top corner like a camera iris */
+  html[data-style="iris"] ::view-transition-old(root) { animation:shrink .8s cubic-bezier(.65,0,.35,1) both; }
+  html[data-style="iris"] ::view-transition-new(root) { animation:irisIn .8s cubic-bezier(.65,0,.35,1) both; }
+  @keyframes irisIn { from { clip-path:circle(0% at 15% 0%); } to { clip-path:circle(160% at 15% 0%); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration:.12s !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="scene" aria-hidden="true">
+    <div class="stars" id="stars"></div>
+    <div class="cloud c1"></div><div class="cloud c2"></div>
+    <div class="astro" id="astro">🌙</div>
+    <div class="hill h1"></div><div class="hill h2"></div>
+  </div>
+
+  <div class="chip">MOCK 02 v2 / 10 &nbsp;·&nbsp; View Transitions theme toggle &nbsp;→&nbsp; <code>src/hooks/useTheme.ts</code></div>
+
+  <div class="card">
+    <h1>Theme, but it performs</h1>
+    <p>Click the button — the whole world morphs: moon sails across and becomes the sun, stars fade for clouds, hills shift tone. Anchored elements move with real interpolated geometry, not a cross-fade. Pick your reveal below; your choice is remembered.</p>
+
+    <button id="bigToggle"><span id="togIco">☀️</span><span id="togLabel">Switch to light</span></button>
+    <p class="hint">origin follows your cursor · also bound to <b>T</b> · first visit respects system preference</p>
+
+    <div class="styles" id="styles">
+      <button data-s="circle" class="sel">⬤ Circle</button>
+      <button data-s="wipe">⇥ Wipe</button>
+      <button data-s="zoom">◎ Zoom</button>
+      <button data-s="iris">◌ Iris</button>
+    </div>
+    <p class="status" id="status"></p>
+  </div>
+
+<script>
+  /* stars */
+  const stars = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 62 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    stars.appendChild(s);
+  }
+
+  const root = document.documentElement, astro = document.getElementById('astro'),
+        ico = document.getElementById('togIco'), label = document.getElementById('togLabel'),
+        statusEl = document.getElementById('status');
+  const supported = typeof document.startViewTransition === 'function';
+
+  /* restore choices, else system preference */
+  const savedTheme = localStorage.getItem('m02-theme');
+  const prefersLight = matchMedia('(prefers-color-scheme: light)').matches;
+  if (savedTheme === 'light' || (!savedTheme && prefersLight)) root.classList.add('light');
+  const savedStyle = localStorage.getItem('m02-style');
+  if (savedStyle) {
+    root.dataset.style = savedStyle;
+    document.querySelectorAll('.styles button').forEach(b => b.classList.toggle('sel', b.dataset.s === savedStyle));
+  } else root.dataset.style = 'circle';
+
+  function syncUI() {
+    const light = root.classList.contains('light');
+    astro.textContent = light ? '☀️' : '🌙';
+    ico.textContent = light ? '🌙' : '☀️';
+    label.textContent = light ? 'Switch to dark' : 'Switch to light';
+    localStorage.setItem('m02-theme', light ? 'light' : 'dark');
+  }
+  function status(extra = '') {
+    statusEl.innerHTML = supported
+      ? `style: <b>${root.dataset.style}</b> · startViewTransition: <b>OK</b> ${extra}`
+      : `<b>No View Transitions API</b> — falls back to a plain color swap. Everything else still works.`;
+  }
+  syncUI(); status();
+
+  document.getElementById('bigToggle').addEventListener('click', e => {
+    const flip = () => { root.classList.toggle('light'); syncUI(); };
+    if (!supported) { flip(); status('(fallback used)'); return; }
+    root.style.setProperty('--tx', e.clientX + 'px');
+    root.style.setProperty('--ty', e.clientY + 'px');
+    const t = document.startViewTransition(flip);
+    t.finished.then(() => status(`· origin ${e.clientX | 0}px, ${e.clientY | 0}px`)).catch(() => {});
+  });
+
+  document.getElementById('styles').addEventListener('click', e => {
+    const b = e.target.closest('button[data-s]'); if (!b) return;
+    root.dataset.style = b.dataset.s;
+    localStorage.setItem('m02-style', b.dataset.s);
+    document.querySelectorAll('.styles button').forEach(x => x.classList.toggle('sel', x === b));
+    status();
+  });
+
+  window.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 't' && !e.metaKey && !e.ctrlKey && e.target === document.body) {
+      document.getElementById('bigToggle').click();
+    }
+  });
+</script>
+</body>
+</html>

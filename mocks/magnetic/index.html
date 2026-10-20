@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 08 — Magnetic buttons</title>
+<style>
+  :root { --bg:#020617; --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa; --cyan:#22d3ee;
+          --panel:rgb(15 23 42/.6); --line:rgb(255 255 255/.1); --veil:rgb(255 255 255/.05); --veil2:rgb(255 255 255/.1); }
+  html.light { --bg:#f2f5fb; --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed; --cyan:#0891b2;
+          --panel:rgb(255 255 255/.72); --line:rgb(15 23 42/.1); --veil:rgb(15 23 42/.04); --veil2:rgb(15 23 42/.08); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+         font-family:Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink);
+         transition:background-color .35s ease, color .35s ease; padding:90px 20px; text-align:center; }
+  .chip { position:fixed; top:14px; left:14px; z-index:99; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3); padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px); }
+  .chip code { color:var(--blue); }
+  .theme-btn { position:fixed; top:12px; right:12px; z-index:99; font:inherit; font-size:12px; font-weight:600;
+    color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 14px; cursor:pointer; backdrop-filter:blur(8px); }
+  .theme-btn:hover { border-color:var(--blue); }
+
+  h1 { font-size:clamp(30px,5vw,48px); margin:0 0 12px; letter-spacing:-.02em; }
+  .sub { color:var(--ink2); max-width:520px; line-height:1.6; font-size:14px; margin:0 0 46px; }
+  .row { display:flex; flex-wrap:wrap; gap:22px; justify-content:center; align-items:center; }
+
+  .mag { display:inline-flex; align-items:center; gap:10px; font:inherit; font-weight:600; cursor:pointer;
+         border-radius:12px; will-change:transform; }
+  .mag.primary { color:#fff; background:#2563eb; border:0; padding:15px 28px; font-size:15px;
+                 box-shadow:0 12px 34px rgb(37 99 235/.35); }
+  .mag.ghost { color:var(--ink); background:var(--veil2); border:1px solid var(--line); padding:15px 28px; font-size:15px; }
+  .mag.icon { color:var(--ink); background:var(--panel); border:1px solid var(--line); width:56px; height:56px;
+              border-radius:50%; justify-content:center; font-size:20px; backdrop-filter:blur(10px); }
+  .mag.small { color:var(--ink); background:var(--veil); border:1px solid var(--line); padding:9px 16px; font-size:12px; }
+
+  .readout { margin-top:52px; font-family:ui-monospace,monospace; font-size:12px; color:var(--ink3); min-height:3.2em; line-height:1.7; }
+  .readout b { color:var(--blue); }
+</style>
+</head>
+<body>
+  <div class="chip">MOCK 08 / 10 &nbsp;·&nbsp; Magnetic buttons &nbsp;→&nbsp; <code>src/sections/Hero.tsx</code> &amp; <code>Contact.tsx</code></div>
+  <button class="theme-btn" id="themeBtn">☀️ Light</button>
+  <h1>Buttons that want to be clicked</h1>
+  <p class="sub">Move your cursor near each control — it leans toward the pointer (strength varies per size) and springs back on exit. You already have <code>whileHover</code> scale on these; magnetic movement is the layer on top.</p>
+
+  <div class="row">
+    <button class="mag primary" data-strength="0.35">⌘ View Projects</button>
+    <button class="mag ghost" data-strength="0.3">↓ Get In Touch</button>
+    <button class="mag icon" data-strength="0.5" aria-label="GitHub">🐙</button>
+    <button class="mag small" data-strength="0.25">Hire Me</button>
+  </div>
+  <p class="readout" id="readout">offset: <b>0px, 0px</b> — hover a button</p>
+
+<script>
+  const readout = document.getElementById('readout');
+  document.querySelectorAll('.mag').forEach(btn => {
+    const strength = parseFloat(btn.dataset.strength);
+    const R = 110; // activation radius around the button
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      btn.style.transition = 'transform .1s ease-out';   // tight follow while tracking
+      btn.style.transform = `translate(${dx * strength}px, ${dy * strength}px)`;
+      readout.innerHTML = `offset: <b>${(dx * strength).toFixed(1)}px, ${(dy * strength).toFixed(1)}px</b> — strength ${strength}`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transition = 'transform .6s cubic-bezier(.22,2.2,.36,1)'; // overshoot spring-back
+      btn.style.transform = '';
+      readout.innerHTML = 'offset: <b>0px, 0px</b> — hover a button';
+    });
+  });
+  const tb = document.getElementById('themeBtn');
+  tb.addEventListener('click', () => {
+    const light = document.documentElement.classList.toggle('light');
+    tb.textContent = light ? '🌙 Dark' : '☀️ Light';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 03 — Cursor spotlight background</title>
+<style>
+  :root { --bg:#020617; --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa; --cyan:#22d3ee;
+          --panel:rgb(15 23 42/.8); --line:rgb(255 255 255/.1); --tile:rgb(15 23 42/.5); }
+  html.light { --bg:#f2f5fb; --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed; --cyan:#0891b2;
+          --panel:rgb(255 255 255/.8); --line:rgb(15 23 42/.1); --tile:rgb(255 255 255/.6); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; font-family:Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink); overflow-x:hidden; }
+
+  /* ---- Background stack: orbs + spotlight + grid + grain (mirrors AnimatedBackground.tsx) ---- */
+  .bg { position:fixed; inset:0; z-index:-1; overflow:hidden; }
+  .orb { position:absolute; border-radius:50%; filter:blur(70px); opacity:.28; }
+  .orb.a { width:34rem; height:34rem; top:-12rem; left:-12rem; background:radial-gradient(circle,#3b82f6,transparent 70%); animation:drift1 18s ease-in-out infinite; }
+  .orb.b { width:38rem; height:38rem; top:30%; right:-14rem; background:radial-gradient(circle,#8b5cf6,transparent 70%); animation:drift2 24s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,40px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-50px,-40px)} }
+
+  /* The trend: a soft spotlight that tracks the cursor (CSS vars set from one rAF-throttled listener) */
+  .spotlight {
+    position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,30%),
+      rgb(96 165 250 / .16), rgb(167 139 250 / .08) 40%, transparent 65%);
+  }
+  .grid {
+    position:absolute; inset:0; opacity:.06;
+    background-image:linear-gradient(to right, rgb(148 163 184/.5) 1px, transparent 1px),
+                     linear-gradient(to bottom, rgb(148 163 184/.5) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+  .grain {
+    position:absolute; inset:0; opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .chip {
+    position:fixed; top:14px; left:14px; z-index:99; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3);
+    padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px);
+  }
+  .chip code { color:var(--blue); }
+  .theme-btn {
+    position:fixed; top:12px; right:12px; z-index:99; font:inherit; font-size:12px; font-weight:600;
+    color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:999px;
+    padding:8px 14px; cursor:pointer; backdrop-filter:blur(8px); transition:border-color .2s ease;
+  }
+  .theme-btn:hover { border-color:var(--blue); }
+  main { max-width:640px; margin:0 auto; padding:26vh 24px 40vh; }
+  h1 { font-size:clamp(36px,6vw,56px); margin:0 0 16px; letter-spacing:-.02em; }
+  p { color:var(--ink2); line-height:1.7; font-size:15px; }
+  .hint { color:var(--ink3); font-size:13px; margin-top:28px; }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-top:40px; }
+  .tile {
+    padding:20px; border-radius:16px; border:1px solid var(--line);
+    background:var(--tile); backdrop-filter:blur(10px);
+    transition:transform .25s ease, border-color .25s ease;
+  }
+  html.light .orb { opacity:.16; }
+  html.light .spotlight {
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,30%),
+      rgb(37 99 235 / .14), rgb(124 58 237 / .07) 40%, transparent 65%);
+  }
+  .tile:hover { transform:translateY(-4px); border-color:rgb(96 165 250/.5); }
+  .tile b { display:block; margin-bottom:6px; }
+  .tile span { font-size:12px; color:var(--ink3); }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <div class="orb a"></div><div class="orb b"></div>
+    <div class="spotlight" id="spot"></div>
+    <div class="grid"></div><div class="grain"></div>
+  </div>
+  <div class="chip">MOCK 03 / 10 &nbsp;·&nbsp; Cursor spotlight background &nbsp;→&nbsp; <code>src/components/AnimatedBackground.tsx</code></div>
+  <button class="theme-btn" id="themeBtn">☀️ Light</button>
+  <main>
+    <h1>Your orbs, but reactive</h1>
+    <p>Your current background has three static blurred orbs drifting on infinite loops. This mock keeps that DNA and adds a <b>spotlight that follows the cursor</b> — the dominant "ambient background" pattern in 2026 portfolios.</p>
+    <p>Implementation is tiny: one <code>mousemove</code> listener, rAF-throttled, writing <code>--mx/--my</code> CSS variables onto a single div with a radial-gradient. No canvas, no WebGL, GPU-friendly.</p>
+    <div class="tiles">
+      <div class="tile"><b>GPU-safe</b><span>Only CSS vars change — no layout, no repaint storm</span></div>
+      <div class="tile"><b>rAF throttled</b><span>One paint per frame max, regardless of mouse events</span></div>
+      <div class="tile"><b>Touch fallback</b><span>Vars default to 50%/30% — mobile keeps the old look</span></div>
+    </div>
+    <p class="hint">Move your mouse around this page. On the real site this layer replaces the static gradient div in AnimatedBackground.</p>
+  </main>
+<script>
+  const spot = document.getElementById('spot');
+  const tb = document.getElementById('themeBtn');
+  tb.addEventListener('click', () => {
+    const light = document.documentElement.classList.toggle('light');
+    tb.textContent = light ? '🌙 Dark' : '☀️ Light';
+  });
+  let raf = null, mx = '50%', my = '30%';
+  window.addEventListener('mousemove', e => {
+    mx = e.clientX + 'px'; my = e.clientY + 'px';
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      spot.style.setProperty('--mx', mx);
+      spot.style.setProperty('--my', my);
+      raf = null;
+    });
+  }, { passive:true });
+</script>
+</body>
+</html>

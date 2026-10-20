@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock 10 — Easter egg (Konami code)</title>
+<style>
+  :root { --bg:#020617; --ink:#fff; --ink2:#d1d5db; --ink3:#9ca3af; --blue:#60a5fa; --purple:#a78bfa; --cyan:#22d3ee; --green:#4ade80;
+          --panel:rgb(15 23 42/.6); --line:rgb(255 255 255/.1); --veil:rgb(255 255 255/.05); }
+  html.light { --bg:#f2f5fb; --ink:#0f172a; --ink2:#374151; --ink3:#566076; --blue:#2563eb; --purple:#7c3aed; --cyan:#0891b2; --green:#16a34a;
+          --panel:rgb(255 255 255/.72); --line:rgb(15 23 42/.1); --veil:rgb(15 23 42/.04); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+         font-family:Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink);
+         transition:background-color .35s ease, color .35s ease; padding:90px 20px; text-align:center; }
+  .chip { position:fixed; top:14px; left:14px; z-index:99; font-size:11px; letter-spacing:.04em;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink3); padding:7px 12px; border-radius:999px; backdrop-filter:blur(8px); }
+  .chip code { color:var(--blue); }
+  .theme-btn { position:fixed; top:12px; right:12px; z-index:99; font:inherit; font-size:12px; font-weight:600;
+    color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 14px; cursor:pointer; backdrop-filter:blur(8px); }
+  .theme-btn:hover { border-color:var(--blue); }
+
+  h1 { font-size:clamp(30px,5vw,48px); margin:0 0 12px; letter-spacing:-.02em; }
+  .sub { color:var(--ink2); max-width:540px; line-height:1.6; font-size:14px; margin:0 0 34px; }
+
+  .seq { display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
+  .key { width:44px; height:44px; border-radius:11px; border:1px solid var(--line); background:var(--veil);
+         display:grid; place-items:center; font-size:17px; color:var(--ink3); transition:all .18s ease; }
+  .key.hit { border-color:var(--green); color:var(--green); background:color-mix(in srgb, var(--green) 12%, transparent); transform:translateY(-3px); }
+  .status { font-family:ui-monospace,monospace; font-size:12px; color:var(--ink3); min-height:1.4em; }
+  .cheat { margin-top:26px; font:inherit; font-size:13px; font-weight:600; color:#fff; background:#2563eb; border:0;
+           border-radius:10px; padding:11px 20px; cursor:pointer; box-shadow:0 10px 28px rgb(37 99 235/.35); }
+  .cheat:hover { background:#3b82f6; }
+
+  .toast { position:fixed; top:70px; left:50%; transform:translate(-50%,-16px); z-index:250; opacity:0;
+           background:var(--panel); border:1px solid var(--green); color:var(--ink); padding:13px 22px; border-radius:14px;
+           font-size:14px; font-weight:600; backdrop-filter:blur(14px); box-shadow:0 20px 60px rgb(0 0 0/.35);
+           transition:opacity .3s ease, transform .3s ease; pointer-events:none; }
+  .toast.show { opacity:1; transform:translate(-50%,0); }
+  .toast small { display:block; font-weight:400; color:var(--ink3); font-size:11.5px; margin-top:3px; }
+  canvas { position:fixed; inset:0; z-index:200; pointer-events:none; }
+  /* post-unlock flourish: border glow on the whole page */
+  body.unlocked { animation:glow 2.4s ease; }
+  @keyframes glow {
+    0%,100% { box-shadow:inset 0 0 0 0 transparent; }
+    30%     { box-shadow:inset 0 0 90px color-mix(in srgb, var(--purple) 35%, transparent); }
+  }
+  .tip { margin-top:30px; font-size:12px; color:var(--ink3); max-width:460px; line-height:1.7; }
+</style>
+</head>
+<body>
+  <div class="chip">MOCK 10 / 10 &nbsp;·&nbsp; Easter egg &nbsp;→&nbsp; global (e.g. <code>src/App.tsx</code>)</div>
+  <button class="theme-btn" id="themeBtn">☀️ Light</button>
+  <h1>For the curious only</h1>
+  <p class="sub">Type the classic Konami code on your keyboard: <b>↑ ↑ ↓ ↓ ← → ← → B A</b>. Success triggers confetti + an achievement toast + a brief glow on the page.</p>
+
+  <div class="seq" id="seq"></div>
+  <p class="status" id="status">waiting for input…</p>
+  <button class="cheat" id="cheat">No keyboard handy? Trigger it</button>
+  <p class="tip">This is the "gamified micro-UX" trend in its most restrained form: one hidden moment, zero cost to the 99.9% of visitors who never find it — but the one who does, remembers the site.</p>
+
+  <div class="toast" id="toast">🕹️ Achievement unlocked: 30 Lives<small>You found the easter egg. recruiters love curiosity.</small></div>
+
+<script>
+  const CODE = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  const ICON = { ArrowUp:'↑', ArrowDown:'↓', ArrowLeft:'←', ArrowRight:'→', b:'B', a:'A' };
+  const seqEl = document.getElementById('seq'), statusEl = document.getElementById('status'), toastEl = document.getElementById('toast');
+  let pos = 0;
+
+  seqEl.innerHTML = CODE.map((k, i) => `<div class="key" data-i="${i}">${ICON[k]}</div>`).join('');
+  const keys = [...seqEl.children];
+  const paint = () => keys.forEach((k, i) => k.classList.toggle('hit', i < pos));
+
+  window.addEventListener('keydown', e => {
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (k !== CODE[pos] && !CODE.includes(k)) return;
+    pos = (k === CODE[0]) ? 1 : (k === CODE[pos] ? pos + 1 : 0);
+    paint();
+    statusEl.textContent = `${pos} / ${CODE.length}`;
+    if (pos === CODE.length) { pos = 0; paint(); unlock(); }
+  });
+
+  function unlock() {
+    statusEl.textContent = 'unlocked!';
+    toastEl.classList.add('show');
+    document.body.classList.add('unlocked');
+    confetti();
+    setTimeout(() => { toastEl.classList.remove('show'); document.body.classList.remove('unlocked'); }, 3200);
+  }
+  document.getElementById('cheat').addEventListener('click', unlock);
+
+  // tiny hand-rolled confetti — no canvas library
+  function confetti() {
+    const c = document.createElement('canvas'); c.width = innerWidth; c.height = innerHeight;
+    document.body.appendChild(c);
+    const ctx = c.getContext('2d');
+    const colors = ['#60a5fa','#a78bfa','#22d3ee','#4ade80','#facc15','#f87171'];
+    const parts = Array.from({ length: 140 }, () => ({
+      x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * 0.35,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 13 - 3,
+      s: Math.random() * 7 + 4, r: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+      c: colors[Math.random() * colors.length | 0],
+    }));
+    let frames = 0;
+    (function tick() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      parts.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.vx *= 0.99; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); ctx.restore();
+      });
+      if (++frames < 240 && parts.some(p => p.y < c.height + 20)) requestAnimationFrame(tick);
+      else c.remove();
+    })();
+  }
+  const tb = document.getElementById('themeBtn');
+  tb.addEventListener('click', () => {
+    const light = document.documentElement.classList.toggle('light');
+    tb.textContent = light ? '🌙 Dark' : '☀️ Light';
+  });
+</script>
+</body>
+</html>
