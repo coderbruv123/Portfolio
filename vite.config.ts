@@ -7,5 +7,6 @@ export default defineConfig({
     tailwindcss()
   ],
 
-  base: '/portfolio/', 
+  // GitHub Pages serves this repository at /Portfolio/ (case-sensitive).
+  base: '/Portfolio/',
 })
