@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaCode, FaGithub, FaLink } from "react-icons/fa";
 import cinemaImg from '../../public/cinema.png';
@@ -60,8 +60,15 @@ const useTilt = () => {
         const card = ref.current;
         if (!card) return;
 
-        let glare: HTMLElement;
         let rafId: number;
+
+        const glare = document.createElement('div');
+        glare.style.cssText = `
+            position: absolute; inset: 0; border-radius: 24px;
+            pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
+            background: radial-gradient(200px circle at 50% 50%, rgb(255 255 255 / 0.16), transparent 60%);
+        `;
+        card.appendChild(glare);
 
         const handleMouseMove = (e: MouseEvent) => {
             const rect = card.getBoundingClientRect();
@@ -92,14 +99,6 @@ const useTilt = () => {
             glare.style.opacity = '0';
         };
 
-        glare = document.createElement('div');
-        glare.style.cssText = `
-            position: absolute; inset: 0; border-radius: 24px;
-            pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
-            background: radial-gradient(200px circle at 50% 50%, rgb(255 255 255 / 0.16), transparent 60%);
-        `;
-        card.appendChild(glare);
-
         card.addEventListener('mousemove', handleMouseMove);
         card.addEventListener('mouseenter', handleMouseEnter);
         card.addEventListener('mouseleave', handleMouseLeave);
@@ -116,38 +115,90 @@ const useTilt = () => {
     return ref;
 };
 
+const ProjectCard = ({ project }: { project: (typeof projects)[number] }) => {
+    const cardRef = useTilt();
+
+    return (
+        <motion.div
+            ref={cardRef}
+            whileHover={{ y: -8 }}
+            className="flex-none shrink-0 snap-center w-[44vw] md:w-[46vw] min-w-[44vw] max-w-[520px] bg-slate-900/80 backdrop-blur border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl group transition-all"
+        >
+            <div className="relative w-full h-80 bg-black/50 flex items-center justify-center overflow-hidden cursor-pointer group-hover:bg-black/70 transition-colors duration-300">
+                {project.mediaType === "image" ? (
+                    <img
+                        src={project.mediaSrc}
+                        alt={project.title}
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                    />
+                ) : (
+                    <video
+                        src={project.mediaSrc}
+                        controls
+                        className="object-cover w-full h-full"
+                    />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <span className="text-sm font-medium text-white bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
+                        Hover for 3D effect
+                    </span>
+                </div>
+            </div>
+
+            <div className="p-10 md:p-12">
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {project.skills.map((skill, i) => (
+                        <span
+                            key={i}
+                            className="bg-blue-500/10 text-blue-300 border border-blue-400/20 text-xs font-medium px-3 py-1.5 rounded-full"
+                        >
+                            {skill}
+                        </span>
+                    ))}
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight">{project.title}</h3>
+                <p className="text-gray-300 text-base leading-relaxed mb-8">{project.description}</p>
+                <div className="flex flex-wrap gap-3">
+                    {project.links.map((link, idx) => (
+                        <a
+                            key={idx}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2.5 px-6 py-3 bg-white/5 border border-white/15 text-white rounded-xl font-medium hover:bg-blue-600 hover:border-blue-500 hover:text-white transition-all duration-300"
+                        >
+                            {idx === 0 ? <FaGithub size={17} /> : <FaLink size={17} />} {link.label}
+                        </a>
+                    ))}
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
 const Projects = () => {
     const trackRef = useRef<HTMLDivElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLDivElement>(null);
-
-    // Track if horizontal scroll should be active
-    const [isActive, setIsActive] = useState(false);
+    const isActiveRef = useRef(false);
 
     useEffect(() => {
         const track = trackRef.current;
         const section = sectionRef.current;
         if (!track || !section) return;
 
-        let currentH = 0;
-        let rafId: number;
+        let currentH = track.scrollLeft;
 
-        // Only active when section is fully within middle 60% of viewport
+        // Horizontal scrolling is active while the section spans the middle of the viewport.
         const updateActiveState = () => {
             const rect = section.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
-            
-            // Calculate if section is fully visible in the middle 60%
-            const sectionTopRatio = rect.top / viewportHeight;
-            const sectionBottomRatio = rect.bottom / viewportHeight;
-            
-            // Only active when section is fully within the middle 60% (between 20% and 80% viewport)
-            const fullyInSection = sectionTopRatio >= 0.2 && sectionBottomRatio <= 0.8;
-            setIsActive(fullyInSection);
+            isActiveRef.current =
+                rect.top <= viewportHeight * 0.2 && rect.bottom >= viewportHeight * 0.8;
         };
 
         const handleWheel = (e: WheelEvent) => {
-            if (!isActive) return;
+            if (!isActiveRef.current) return;
 
             const m = track.scrollWidth - track.clientWidth;
             if (m <= 0) return;
@@ -171,16 +222,24 @@ const Projects = () => {
         const wheelHandler = (e: WheelEvent) => handleWheel(e);
         track.addEventListener('wheel', wheelHandler, { passive: false });
 
+        // Keep our position in sync with native scrolling (drag, touch, scrollbar).
+        const syncScrollPosition = () => {
+            currentH = track.scrollLeft;
+        };
+        track.addEventListener('scroll', syncScrollPosition, { passive: true });
+
         // Track scroll to update active state
         window.addEventListener('scroll', updateActiveState, { passive: true });
+        window.addEventListener('resize', updateActiveState);
         updateActiveState(); // Initial check
 
         return () => {
             track.removeEventListener('wheel', wheelHandler);
+            track.removeEventListener('scroll', syncScrollPosition);
             window.removeEventListener('scroll', updateActiveState);
-            if (rafId) cancelAnimationFrame(rafId);
+            window.removeEventListener('resize', updateActiveState);
         };
-    }, [isActive]);
+    }, []);
 
     return (
         <section
@@ -205,67 +264,9 @@ const Projects = () => {
                             className="flex gap-6 overflow-x-auto scroll-snap-x snap-mandatory w-[94vw] h-full no-scrollbar"
                             style={{ scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'] }}
                         >
-                            {projects.map((project, idx) => {
-                                const cardRef = useTilt();
-                                return (
-                                    <motion.div
-                                        key={idx}
-                                        ref={cardRef}
-                                        whileHover={{ y: -8 }}
-                                        className="flex-none shrink-0 snap-center w-[44vw] md:w-[46vw] min-w-[44vw] max-w-[520px] bg-slate-900/80 backdrop-blur border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl group transition-all"
-                                    >
-                                        <div className="relative w-full h-80 bg-black/50 flex items-center justify-center overflow-hidden cursor-pointer group-hover:bg-black/70 transition-colors duration-300">
-                                            {project.mediaType === "image" ? (
-                                                <img
-                                                    src={project.mediaSrc}
-                                                    alt={project.title}
-                                                    className="object-cover w-full h-full"
-                                                    loading="lazy"
-                                                />
-                                            ) : (
-                                                <video
-                                                    src={project.mediaSrc}
-                                                    controls
-                                                    className="object-cover w-full h-full"
-                                                />
-                                            )}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                                <span className="text-sm font-medium text-white bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
-                                                    Hover for 3D effect
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-10 md:p-12">
-                                            <div className="flex flex-wrap gap-2 mb-6">
-                                                {project.skills.map((skill, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="bg-blue-500/10 text-blue-300 border border-blue-400/20 text-xs font-medium px-3 py-1.5 rounded-full"
-                                                    >
-                                                        {skill}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight">{project.title}</h3>
-                                            <p className="text-gray-300 text-base leading-relaxed mb-8">{project.description}</p>
-                                            <div className="flex flex-wrap gap-3">
-                                                {project.links.map((link, idx) => (
-                                                    <a
-                                                        key={idx}
-                                                        href={link.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-2.5 px-6 py-3 bg-white/5 border border-white/15 text-white rounded-xl font-medium hover:bg-blue-600 hover:border-blue-500 hover:text-white transition-all duration-300"
-                                                    >
-                                                        {idx === 0 ? <FaGithub size={17} /> : <FaLink size={17} />} {link.label}
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
+                            {projects.map((project, idx) => (
+                                <ProjectCard key={idx} project={project} />
+                            ))}
                         </div>
                     </div>
 
